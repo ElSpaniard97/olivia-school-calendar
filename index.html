@@ -30,18 +30,21 @@
     .nav-buttons button { background: var(--red-2); border:none; padding:12px 18px; border-radius:50%;
                           font-size:1.4em; color:var(--red-5); cursor:pointer; min-height:44px; min-width:44px; }
 
-    .quote { font-size:.95em; margin: 4px 0 10px; color: var(--muted); text-align:center; font-style:italic; }
+    /* Verse block */
+    .verse { background: var(--card-2); border:1px solid var(--red-3); border-radius:12px; padding:12px; margin:8px 0 12px; }
+    .verse-ref { color: var(--red-5); font-weight:700; margin-bottom:6px; }
+    .verse-text { font-style: italic; }
 
+    /* Calendar grid */
     .weekdays, .days { display:grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
     .weekdays div { color: var(--red-5); font-weight: 700; text-align:center; }
-
-    .day-cell { padding: 10px; border-radius: 10px; background: var(--card-2); cursor: pointer; min-height:44px; text-align:center; }
+    .day-cell { position:relative; padding: 12px 10px; border-radius: 10px; background: var(--card-2); cursor: pointer; min-height:56px; text-align:center; }
     .day-cell:hover { background: var(--red-3); }
     .today { background: var(--red-5); color:#fff; font-weight:700; }
+    .task-dot { position:absolute; top:6px; right:6px; width:6px; height:6px; border-radius:50%; background: var(--red-5); }
 
-    .toolbar { display:flex; gap:8px; justify-content:center; align-items:center; margin:10px 0; flex-wrap:wrap; }
+    /* Buttons / form shared */
     .ghost { background: var(--red-2); color: var(--ink); border:1px solid var(--red-3); border-radius:10px; padding:10px 14px; cursor:pointer; font-weight:700; }
-
     .form { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:10px; }
     input, select, button.primary { padding:12px; border-radius:10px; border:1px solid var(--red-3); font-size:1em; min-height:44px; }
     button.primary { background: var(--red-5); color:#fff; border:none; cursor:pointer; font-weight:700; border-radius:10px; }
@@ -105,25 +108,35 @@
     <!-- Tabs -->
     <nav class="tabs" role="tablist" aria-label="Views">
       <button class="tab-btn" id="tabCalendar" role="tab" aria-controls="viewCalendar" aria-selected="true">Calendar View</button>
+      <button class="tab-btn" id="tabTasks" role="tab" aria-controls="viewTasks" aria-selected="false">Task Manager</button>
       <button class="tab-btn" id="tabWeekly" role="tab" aria-controls="viewWeekly" aria-selected="false">Weekly View</button>
+      <button class="tab-btn" id="tabVerses" role="tab" aria-controls="viewVerses" aria-selected="false">Pinned Verses</button>
     </nav>
 
-    <!-- Calendar View -->
+    <!-- Calendar View (clean) -->
     <section id="viewCalendar" role="tabpanel" aria-labelledby="tabCalendar">
       <header>
         <div class="nav-buttons"><button id="prevMonth" aria-label="Previous month">⟨</button></div>
         <h1 id="monthYear">Olivia's School Tasks</h1>
         <div class="nav-buttons"><button id="nextMonth" aria-label="Next month">⟩</button></div>
       </header>
-      <p class="quote" id="quote"></p>
+
+      <!-- Daily verse (replaces quote), with pin button -->
+      <div class="verse" id="verseBlock">
+        <div class="verse-ref" id="verseRef">Verse</div>
+        <div class="verse-text" id="verseText"></div>
+        <div style="margin-top:8px; display:flex; gap:8px; justify-content:flex-end;">
+          <button class="ghost" id="pinVerseBtn">Pin Verse</button>
+          <button class="ghost" id="newVerseBtn" title="Shuffle today's verse">New Verse</button>
+        </div>
+      </div>
 
       <div class="weekdays" id="weekdayRow"></div>
       <div class="days" id="days"></div>
+    </section>
 
-      <div class="toolbar">
-        <button class="ghost" id="openBulk">Bulk Upload</button>
-      </div>
-
+    <!-- Task Manager (form + list + bulk + delete) -->
+    <section id="viewTasks" role="tabpanel" aria-labelledby="tabTasks" hidden>
       <div class="form" aria-label="Add task">
         <input type="text" id="taskTitle" placeholder="Task title" />
         <input type="date" id="taskDate" />
@@ -139,6 +152,7 @@
           <option value="high">high</option>
         </select>
         <button class="primary" id="addTask">Add Task</button>
+        <button class="ghost" id="openBulk">Bulk Upload</button>
       </div>
 
       <ul class="list" id="taskList"></ul>
@@ -154,6 +168,13 @@
       </div>
       <div id="weeklyContainer"></div>
       <button class="bulk-delete" id="deleteCompletedWeekly">Delete All Completed Tasks</button>
+    </section>
+
+    <!-- Pinned Verses -->
+    <section id="viewVerses" role="tabpanel" aria-labelledby="tabVerses" hidden>
+      <h3 style="margin:0 0 8px; color:var(--red-5);">Pinned Verses</h3>
+      <div id="pinnedList"></div>
+      <button class="bulk-delete" id="clearPinned">Clear All Pinned Verses</button>
     </section>
 
     <!-- Bulk Upload Modal -->
@@ -176,7 +197,7 @@
 
   <script>
   (function(){
-    // Password gate
+    // ===== Password Gate =====
     const PASSWORD = 'Moana0121';
     const lock = document.getElementById('lockScreen');
     const lockCard = document.getElementById('lockCard');
@@ -193,78 +214,62 @@
     lockInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') unlock(); });
     try{ if(localStorage.getItem('olivia_authed')==='1'){ lock.style.display='none'; appRoot.hidden=false; } }catch{}
 
-    // App
+    // ===== App =====
     function initApp(){
-      // Elements
+      // Tabs
       const tabCalendar = document.getElementById('tabCalendar');
+      const tabTasks = document.getElementById('tabTasks');
       const tabWeekly = document.getElementById('tabWeekly');
+      const tabVerses = document.getElementById('tabVerses');
       const viewCalendar = document.getElementById('viewCalendar');
+      const viewTasks = document.getElementById('viewTasks');
       const viewWeekly = document.getElementById('viewWeekly');
+      const viewVerses = document.getElementById('viewVerses');
 
+      function setTab(name){
+        const map = {
+          calendar: [tabCalendar, viewCalendar],
+          tasks:    [tabTasks, viewTasks],
+          weekly:   [tabWeekly, viewWeekly],
+          verses:   [tabVerses, viewVerses],
+        };
+        for(const k of Object.keys(map)){
+          const [btn, panel] = map[k];
+          const on = (k===name);
+          btn.setAttribute('aria-selected', on);
+          panel.hidden = !on;
+        }
+        localStorage.setItem('uiTab_Olivia', name);
+      }
+      (function(){ // restore tab
+        const saved = localStorage.getItem('uiTab_Olivia') || 'calendar';
+        setTab(saved);
+      })();
+
+      tabCalendar.addEventListener('click', ()=> setTab('calendar'));
+      tabTasks.addEventListener('click', ()=> setTab('tasks'));
+      tabWeekly.addEventListener('click', ()=> setTab('weekly'));
+      tabVerses.addEventListener('click', ()=> setTab('verses'));
+
+      // ===== Data =====
+      const STORAGE_KEY = 'schoolTasks_OliviaSims';
+      let tasks = [];
+      try{ tasks = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch{ tasks=[]; }
+      const saveTasks = ()=>{ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); }catch{} };
+
+      // ===== Calendar =====
       const monthYear = document.getElementById('monthYear');
       const prevMonth = document.getElementById('prevMonth');
       const nextMonth = document.getElementById('nextMonth');
       const daysEl = document.getElementById('days');
       const weekdayRow = document.getElementById('weekdayRow');
-      const quote = document.getElementById('quote');
+      let viewMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 
-      const addTaskBtn = document.getElementById('addTask');
-      const taskTitle = document.getElementById('taskTitle');
-      const taskDate = document.getElementById('taskDate');
-      const taskCategory = document.getElementById('taskCategory');
-      const taskPriority = document.getElementById('taskPriority');
-      const taskList = document.getElementById('taskList');
+      function ymd(d){ return d.toISOString().slice(0,10); }
+      function fmt(d, opts){ return new Intl.DateTimeFormat(undefined, opts).format(d); }
 
-      const openBulk = document.getElementById('openBulk');
-      const bulkModal = document.getElementById('bulkModal');
-      const closeBulk = document.getElementById('closeBulk');
-      const bulkInput = document.getElementById('bulkInput');
-      const bulkImport = document.getElementById('bulkImport');
-      const bulkErrors = document.getElementById('bulkErrors');
-      const bulkClear = document.getElementById('bulkClear');
-
-      const prevWeekBtn = document.getElementById('prevWeek');
-      const nextWeekBtn = document.getElementById('nextWeek');
-      const weekTitle = document.getElementById('weekTitle');
-      const weeklyContainer = document.getElementById('weeklyContainer');
-
-      // Data
-      const STORAGE_KEY = 'schoolTasks_OliviaSims';
-      const QUOTES = [
-        "Keep going, Olivia. You're doing great.",
-        "One assignment at a time.",
-        "You can handle this.",
-        "Small steps add up.",
-        "Stay focused and take a breath."
-      ];
-      const CATEGORIES = new Set(['Homework','Project','Exam','Reminder']);
-      const PRIORITIES = new Set(['low','medium','high']);
-
-      const TODAY = new Date();
-      let viewMonth = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
-      let tasks = [];
-      try{ tasks = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch{ tasks=[]; }
-
-      let activeTab = localStorage.getItem('uiTab_Olivia') || 'calendar';
-
-      // Helpers
-      const fmt = (d, opts) => new Intl.DateTimeFormat(undefined, opts).format(d);
-      const ymd = d => d.toISOString().slice(0,10);
-      const parseDate = s => { const m = /^\d{4}-\d{2}-\d{2}$/.test(s) ? new Date(s+'T00:00:00') : null; return m && !isNaN(m) ? m : null; };
-      const save = () => { try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); }catch{} };
-
-      function setTab(tab){
-        activeTab = tab;
-        localStorage.setItem('uiTab_Olivia', tab);
-        const calActive = tab==='calendar';
-        tabCalendar.setAttribute('aria-selected', calActive);
-        tabWeekly.setAttribute('aria-selected', !calActive);
-        viewCalendar.hidden = !calActive; viewWeekly.hidden = calActive;
-      }
-
-      // Calendar render
       function renderCalendar(){
-        // Weekday header (always rebuild to avoid “missing calendar” issue)
+        // Weekday header
         const W = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
         weekdayRow.innerHTML = W.map(w=>`<div>${w}</div>`).join('');
 
@@ -284,25 +289,38 @@
           cell.className = 'day-cell';
           cell.textContent = d;
           const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-          if(ymd(new Date())===dateStr) cell.classList.add('today');
+
+          // Today highlight
+          if(ymd(new Date()) === dateStr) cell.classList.add('today');
+
+          // Red dot if tasks on this date
+          const hasTasks = tasks.some(t => t.date === dateStr);
+          if(hasTasks){ const dot = document.createElement('span'); dot.className='task-dot'; cell.appendChild(dot); }
+
+          // Quick add on click
           cell.addEventListener('click', ()=> quickAdd(dateStr));
           daysEl.appendChild(cell);
         }
-
-        renderTasks();
-        quote.textContent = QUOTES[Math.floor(Math.random()*QUOTES.length)];
       }
-
       function quickAdd(dateStr){
         const t = prompt('Add a task for '+dateStr+':');
         if(!t) return;
         tasks.push({ title:t.trim(), date:dateStr, category:'Homework', priority:'medium', done:false });
-        save(); renderTasks(); if(activeTab==='weekly') renderWeekly();
+        saveTasks(); renderCalendar(); renderTasks(); renderWeekly();
       }
+      prevMonth.addEventListener('click', ()=>{ viewMonth.setMonth(viewMonth.getMonth()-1); renderCalendar(); });
+      nextMonth.addEventListener('click', ()=>{ viewMonth.setMonth(viewMonth.getMonth()+1); renderCalendar(); });
+
+      // ===== Task Manager =====
+      const addTaskBtn = document.getElementById('addTask');
+      const taskTitle = document.getElementById('taskTitle');
+      const taskDate = document.getElementById('taskDate');
+      const taskCategory = document.getElementById('taskCategory');
+      const taskPriority = document.getElementById('taskPriority');
+      const taskList = document.getElementById('taskList');
 
       function escapeHtml(s){ return s.replace(/[&<>"]/g, c=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]) ); }
 
-      // Calendar view task list
       function renderTasks(){
         taskList.innerHTML='';
         if(!tasks.length){ taskList.innerHTML = '<li class="item">No tasks</li>'; return; }
@@ -312,15 +330,14 @@
           li.className = 'item'+(t.done?' done':'');
           li.innerHTML = `<div><span class="badge ${t.category}">${t.category}</span><strong>${escapeHtml(t.title)}</strong> (${t.date}) <span class="dot ${t.priority}"></span></div>
                           <div><input type="checkbox" ${t.done?'checked':''}><button class="delete-btn">Delete</button></div>`;
-          li.querySelector('input').addEventListener('change', ()=>{ t.done=!t.done; save(); renderTasks(); if(activeTab==='weekly') renderWeekly(); });
-          const doDel = ()=>{ if(confirm('Delete this task?')){ tasks = tasks.filter(x=>x!==t); save(); renderTasks(); if(activeTab==='weekly') renderWeekly(); } };
+          li.querySelector('input').addEventListener('change', ()=>{ t.done=!t.done; saveTasks(); renderTasks(); renderCalendar(); renderWeekly(); });
+          const doDel = ()=>{ if(confirm('Delete this task?')){ tasks = tasks.filter(x=>x!==t); saveTasks(); renderTasks(); renderCalendar(); renderWeekly(); } };
           li.querySelector('.delete-btn').addEventListener('click', doDel);
           li.addEventListener('dblclick', doDel);
           taskList.appendChild(li);
         }
       }
 
-      // Add task form
       addTaskBtn.addEventListener('click', ()=>{
         const title = (taskTitle.value||'').trim();
         const date = taskDate.value;
@@ -328,26 +345,27 @@
         const priority = taskPriority.value;
         if(!title || !date) return alert('Please fill out both title and date');
         tasks.push({ title, date, category, priority, done:false });
-        save(); taskTitle.value=''; taskDate.value=''; renderTasks(); if(activeTab==='weekly') renderWeekly();
+        saveTasks(); taskTitle.value=''; taskDate.value=''; renderTasks(); renderCalendar(); renderWeekly();
       });
 
-      // Month nav
-      prevMonth.addEventListener('click', ()=>{ viewMonth.setMonth(viewMonth.getMonth()-1); renderCalendar(); });
-      nextMonth.addEventListener('click', ()=>{ viewMonth.setMonth(viewMonth.getMonth()+1); renderCalendar(); });
+      // Bulk modal
+      const openBulk = document.getElementById('openBulk');
+      const bulkModal = document.getElementById('bulkModal');
+      const closeBulk = document.getElementById('closeBulk');
+      const bulkInput = document.getElementById('bulkInput');
+      const bulkImport = document.getElementById('bulkImport');
+      const bulkErrors = document.getElementById('bulkErrors');
+      const bulkClear = document.getElementById('bulkClear');
 
-      // Bulk delete
-      document.getElementById('deleteCompleted').addEventListener('click', ()=>{
-        if(confirm('Delete all completed tasks?')){ tasks = tasks.filter(t=>!t.done); save(); renderTasks(); if(activeTab==='weekly') renderWeekly(); }
-      });
-      document.getElementById('deleteCompletedWeekly').addEventListener('click', ()=>{
-        if(confirm('Delete all completed tasks?')){ tasks = tasks.filter(t=>!t.done); save(); renderTasks(); renderWeekly(); }
-      });
-
-      // Bulk upload modal
       openBulk.addEventListener('click', ()=>{ bulkModal.style.display='flex'; bulkInput.focus(); });
       closeBulk.addEventListener('click', ()=>{ bulkModal.style.display='none'; bulkErrors.textContent=''; });
       bulkClear.addEventListener('click', ()=>{ bulkInput.value=''; bulkErrors.textContent=''; });
       bulkImport.addEventListener('click', ()=>{
+        const CATEGORIES = new Set(['Homework','Project','Exam','Reminder']);
+        const PRIORITIES = new Set(['low','medium','high']);
+        const parseDate = s => { const m = /^\d{4}-\d{2}-\d{2}$/.test(s) ? new Date(s+'T00:00:00') : null; return m && !isNaN(m) ? m : null; };
+        const ymd = d => d.toISOString().slice(0,10);
+
         const lines = bulkInput.value.split(/\n+/).map(l=>l.trim()).filter(Boolean);
         let ok=0, bad=0;
         for(const line of lines){
@@ -359,22 +377,37 @@
           tasks.push({ title, date: ymd(d), category: catOk?category:'Homework', priority: priOk?priority:'medium', done:false });
           ok++;
         }
-        save(); renderTasks(); if(activeTab==='weekly') renderWeekly();
+        saveTasks(); renderTasks(); renderCalendar(); renderWeekly();
         bulkErrors.textContent = `Imported ${ok} task(s). ${bad? bad+" line(s) skipped." : ''}`;
         if(ok && !bad){ bulkModal.style.display='none'; bulkInput.value=''; }
       });
 
-      // Weekly view
-      let weekAnchor = startOfWeek(new Date()); // Monday start
+      // Delete completed buttons
+      document.getElementById('deleteCompleted').addEventListener('click', ()=>{
+        if(confirm('Delete all completed tasks?')){ tasks = tasks.filter(t=>!t.done); saveTasks(); renderTasks(); renderCalendar(); renderWeekly(); }
+      });
+      document.getElementById('deleteCompletedWeekly').addEventListener('click', ()=>{
+        if(confirm('Delete all completed tasks?')){ tasks = tasks.filter(t=>!t.done); saveTasks(); renderTasks(); renderCalendar(); renderWeekly(); }
+      });
+
+      // ===== Weekly View =====
+      const prevWeekBtn = document.getElementById('prevWeek');
+      const nextWeekBtn = document.getElementById('nextWeek');
+      const weekTitle = document.getElementById('weekTitle');
+      const weeklyContainer = document.getElementById('weeklyContainer');
+
       function startOfWeek(d){
         const tmp = new Date(d.getFullYear(), d.getMonth(), d.getDate());
         const day = tmp.getDay(); // 0 Sun .. 6 Sat
-        const diff = (day===0? -6 : 1 - day); // Monday
+        const diff = (day===0? -6 : 1 - day); // Monday start
         tmp.setDate(tmp.getDate()+diff); tmp.setHours(0,0,0,0); return tmp;
       }
+      let weekAnchor = startOfWeek(new Date());
 
       function renderWeekly(){
         weeklyContainer.innerHTML='';
+        const fmt = (d,o)=> new Intl.DateTimeFormat(undefined,o).format(d);
+        const ymd = d => d.toISOString().slice(0,10);
         const start = new Date(weekAnchor);
         const end = new Date(start); end.setDate(end.getDate()+6);
         weekTitle.textContent = `${fmt(start,{month:'short', day:'numeric'})} – ${fmt(end,{month:'short', day:'numeric', year:'numeric'})}`;
@@ -393,10 +426,10 @@
           } else {
             for(const t of todays){
               const row = document.createElement('div'); row.className='item'+(t.done?' done':'');
-              row.innerHTML = `<div><span class="badge ${t.category}">${t.category}</span><strong>${escapeHtml(t.title)}</strong><span class="dot ${t.priority}"></span></div>
+              row.innerHTML = `<div><span class="badge ${t.category}">${escapeHtml(t.category)}</span><strong>${escapeHtml(t.title)}</strong><span class="dot ${t.priority}"></span></div>
                                <div><input type="checkbox" ${t.done?'checked':''}><button class="delete-btn">Delete</button></div>`;
-              row.querySelector('input').addEventListener('change', ()=>{ t.done=!t.done; save(); renderWeekly(); renderTasks(); });
-              const doDel = ()=>{ if(confirm('Delete this task?')){ tasks = tasks.filter(x=>x!==t); save(); renderWeekly(); renderTasks(); } };
+              row.querySelector('input').addEventListener('change', ()=>{ t.done=!t.done; saveTasks(); renderWeekly(); renderTasks(); renderCalendar(); });
+              const doDel = ()=>{ if(confirm('Delete this task?')){ tasks = tasks.filter(x=>x!==t); saveTasks(); renderWeekly(); renderTasks(); renderCalendar(); } };
               row.querySelector('.delete-btn').addEventListener('click', doDel);
               row.addEventListener('dblclick', doDel);
               group.appendChild(row);
@@ -405,29 +438,142 @@
           weeklyContainer.appendChild(group);
         }
       }
-
-      // Week nav
       prevWeekBtn.addEventListener('click', ()=>{ weekAnchor.setDate(weekAnchor.getDate()-7); renderWeekly(); });
       nextWeekBtn.addEventListener('click', ()=>{ weekAnchor.setDate(weekAnchor.getDate()+7); renderWeekly(); });
 
-      // Tabs
-      tabCalendar.addEventListener('click', ()=> setTab('calendar'));
-      tabWeekly.addEventListener('click', ()=> setTab('weekly'));
+      // ===== Daily Bible Verse (Gospel of John, KJV) =====
+      // Referenced from your link (John), using KJV text for safe redistribution.
+      const VERSES = [
+        {ref:'John 1:1', text:'In the beginning was the Word, and the Word was with God, and the Word was God.'},
+        {ref:'John 1:5', text:'And the light shineth in darkness; and the darkness comprehended it not.'},
+        {ref:'John 1:12', text:'But as many as received him, to them gave he power to become the sons of God, even to them that believe on his name.'},
+        {ref:'John 3:16', text:'For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.'},
+        {ref:'John 3:17', text:'For God sent not his Son into the world to condemn the world; but that the world through him might be saved.'},
+        {ref:'John 6:35', text:'I am the bread of life: he that cometh to me shall never hunger; and he that believeth on me shall never thirst.'},
+        {ref:'John 8:12', text:'I am the light of the world: he that followeth me shall not walk in darkness, but shall have the light of life.'},
+        {ref:'John 10:10', text:'I am come that they might have life, and that they might have it more abundantly.'},
+        {ref:'John 10:27', text:'My sheep hear my voice, and I know them, and they follow me.'},
+        {ref:'John 11:25', text:'I am the resurrection, and the life: he that believeth in me, though he were dead, yet shall he live.'},
+        {ref:'John 13:34', text:'A new commandment I give unto you, That ye love one another; as I have loved you.'},
+        {ref:'John 14:1', text:'Let not your heart be troubled: ye believe in God, believe also in me.'},
+        {ref:'John 14:6', text:'I am the way, the truth, and the life: no man cometh unto the Father, but by me.'},
+        {ref:'John 14:27', text:'Peace I leave with you, my peace I give unto you: not as the world giveth, give I unto you. Let not your heart be troubled, neither let it be afraid.'},
+        {ref:'John 15:5', text:'I am the vine, ye are the branches: He that abideth in me, and I in him, the same bringeth forth much fruit.'},
+        {ref:'John 15:7', text:'If ye abide in me, and my words abide in you, ye shall ask what ye will, and it shall be done unto you.'},
+        {ref:'John 15:11', text:'These things have I spoken unto you, that my joy might remain in you, and that your joy might be full.'},
+        {ref:'John 16:33', text:'In the world ye shall have tribulation: but be of good cheer; I have overcome the world.'},
+        {ref:'John 17:17', text:'Sanctify them through thy truth: thy word is truth.'},
+        {ref:'John 20:31', text:'These are written, that ye might believe that Jesus is the Christ, the Son of God; and that believing ye might have life through his name.'}
+      ];
+      const verseRefEl = document.getElementById('verseRef');
+      const verseTextEl = document.getElementById('verseText');
+      const pinVerseBtn = document.getElementById('pinVerseBtn');
+      const newVerseBtn = document.getElementById('newVerseBtn');
+      const PIN_KEY = 'pinned_verses_Olivia';
+      const ROTATION_KEY = 'verse_rotation_Olivia';
+      const LAST_DAY_KEY = 'verse_last_day_Olivia';
 
-      // Init
-      setTab(activeTab);
-      renderCalendar();
-      renderWeekly();
+      function getRotation(){
+        try{
+          const data = JSON.parse(localStorage.getItem(ROTATION_KEY)||'null');
+          if(Array.isArray(data) && data.length){ return data; }
+        }catch{}
+        // create new shuffled rotation
+        const idx = [...VERSES.keys()];
+        for(let i=idx.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [idx[i],idx[j]]=[idx[j],idx[i]]; }
+        localStorage.setItem(ROTATION_KEY, JSON.stringify(idx));
+        return idx;
+      }
+      function popNextVerseIdx(){
+        const rot = getRotation();
+        const next = rot.shift();
+        if(rot.length===0){
+          // reshuffle full set after exhausting
+          const full = [...VERSES.keys()];
+          for(let i=full.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [full[i],full[j]]=[full[j],full[i]]; }
+          localStorage.setItem(ROTATION_KEY, JSON.stringify(full));
+        } else {
+          localStorage.setItem(ROTATION_KEY, JSON.stringify(rot));
+        }
+        return next ?? 0;
+      }
+      function loadTodaysVerse(forceNew=false){
+        const today = new Date().toISOString().slice(0,10);
+        const lastDay = localStorage.getItem(LAST_DAY_KEY);
+        let idx = parseInt(localStorage.getItem(LAST_DAY_KEY+'_idx')||'-1',10);
+        if(forceNew || lastDay !== today || isNaN(idx)){
+          idx = popNextVerseIdx();
+          localStorage.setItem(LAST_DAY_KEY, today);
+          localStorage.setItem(LAST_DAY_KEY+'_idx', String(idx));
+        }
+        const v = VERSES[idx] || VERSES[0];
+        verseRefEl.textContent = v.ref;
+        verseTextEl.textContent = v.text;
+        // return current for pinning
+        return v;
+      }
+      let currentVerse = loadTodaysVerse(false);
+      newVerseBtn.addEventListener('click', ()=>{ currentVerse = loadTodaysVerse(true); });
+
+      // Pinned verses
+      function getPinned(){
+        try{ const p = JSON.parse(localStorage.getItem(PIN_KEY)||'[]'); return Array.isArray(p)? p: []; }catch{ return []; }
+      }
+      function setPinned(arr){ localStorage.setItem(PIN_KEY, JSON.stringify(arr)); renderPinned(); }
+      pinVerseBtn.addEventListener('click', ()=>{
+        const pins = getPinned();
+        if(!pins.some(p=>p.ref===currentVerse.ref && p.text===currentVerse.text)){
+          pins.unshift({ref: currentVerse.ref, text: currentVerse.text, ts: Date.now()});
+          setPinned(pins);
+          alert('Verse pinned.');
+        } else {
+          alert('Already pinned.');
+        }
+      });
+
+      const pinnedList = document.getElementById('pinnedList');
+      const clearPinned = document.getElementById('clearPinned');
+      function renderPinned(){
+        const pins = getPinned();
+        pinnedList.innerHTML = '';
+        if(!pins.length){
+          const empty = document.createElement('div');
+          empty.textContent = 'No pinned verses';
+          empty.style.color = '#a34747';
+          empty.style.padding = '8px';
+          pinnedList.appendChild(empty);
+          return;
+        }
+        for(const p of pins){
+          const card = document.createElement('div');
+          card.className = 'verse';
+          card.innerHTML = `<div class="verse-ref">${p.ref}</div><div class="verse-text">${p.text}</div>`;
+          const actions = document.createElement('div');
+          actions.style.display='flex'; actions.style.justifyContent='flex-end'; actions.style.gap='8px'; actions.style.marginTop='8px';
+          const del = document.createElement('button'); del.className='delete-btn'; del.textContent='Delete';
+          del.onclick = ()=>{ const next = getPinned().filter(x=>!(x.ref===p.ref && x.text===p.text)); setPinned(next); };
+          actions.appendChild(del); card.appendChild(actions);
+          pinnedList.appendChild(card);
+        }
+      }
+      clearPinned.addEventListener('click', ()=>{ if(confirm('Clear all pinned verses?')) setPinned([]); });
+
+      // ===== Init all views =====
+      function renderAll(){ renderCalendar(); renderTasks(); renderWeekly(); renderPinned(); }
+      renderAll();
 
       // Keyboard shortcuts (month)
       window.addEventListener('keydown', (e)=>{
         if(appRoot.hidden) return;
-        if(e.key==='ArrowLeft' && activeTab==='calendar') prevMonth.click();
-        if(e.key==='ArrowRight' && activeTab==='calendar') nextMonth.click();
+        const active = localStorage.getItem('uiTab_Olivia') || 'calendar';
+        if(active==='calendar'){
+          if(e.key==='ArrowLeft') prevMonth.click();
+          if(e.key==='ArrowRight') nextMonth.click();
+        }
       });
     }
 
-    // If already unlocked this session
+    // In case already unlocked in this session
     if(!appRoot.hidden){ initApp(); }
   })();
   </script>
