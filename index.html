@@ -11,395 +11,198 @@
       --ink:#3c0a0a; --card:#fffafa; --card-2:#fff1f1; --muted:#a34747;
       --ok:#66cc66; --warn:#ff9933; --bad:#ff3333;
     }
-    body { font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: linear-gradient(135deg, var(--red-1) 0%, var(--red-2) 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; color: var(--ink); }
+    body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, var(--red-1) 0%, var(--red-2) 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; color: var(--ink); }
     .app { width: 96%; max-width: 900px; background: var(--card); border-radius: 20px; box-shadow: 0 10px 25px rgba(255, 100, 100, 0.2); overflow: hidden; padding: 16px; animation: fadeIn .6s ease; }
     @keyframes fadeIn { from{opacity:0; transform: translateY(8px);} to{opacity:1; transform:none;} }
 
-    /* Tabs */
     .tabs { display:flex; gap:8px; justify-content:center; margin-bottom:12px; flex-wrap:wrap; }
     .tab-btn { border:none; cursor:pointer; background: var(--red-2); color: var(--ink); padding: 10px 14px; border-radius: 999px; font-weight:700; min-height:44px; min-width:44px; }
-    .tab-btn[aria-selected="true"]{ background: var(--red-5); color:#fff; box-shadow: 0 6px 16px rgba(217,58,58,.25); }
+    .tab-btn[aria-selected="true"]{ background: var(--red-5); color:#fff; }
 
-    header { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
-    header h1 { color: var(--red-5); font-size: 1.5em; margin:0; text-align:center; flex:1 1 100%; }
+    header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px; }
+    header h1 { color: var(--red-5); font-size: 1.5em; margin:0; flex:1 1 100%; text-align:center; }
 
-    .nav-buttons button { background: var(--red-2); border:none; padding:12px 18px; border-radius:50%; font-size:1.4em; color:var(--red-5); cursor:pointer; transition:.2s; min-height:44px; min-width:44px; }
-    .nav-buttons button:hover { background: var(--red-4); color:#fff; transform: scale(1.06); }
-
-    .quote { font-size: .95em; margin: 4px 0 10px; color: var(--muted); font-style: italic; text-align:center; }
+    .nav-buttons button { background: var(--red-2); border:none; padding:12px 18px; border-radius:50%; font-size:1.4em; color:var(--red-5); cursor:pointer; min-height:44px; min-width:44px; }
+    .quote { font-size:.95em; margin: 4px 0 10px; color: var(--muted); text-align:center; font-style:italic; }
 
     .weekdays, .days { display:grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
-    .weekdays div { color: var(--red-5); font-weight: 700; text-align:center; }
+    .weekdays div { color: var(--red-5); font-weight:700; text-align:center; }
+    .day-cell { padding:10px; border-radius:10px; background: var(--card-2); cursor:pointer; min-height:44px; text-align:center; }
+    .today { background: var(--red-5); color:#fff; font-weight:700; }
 
-    .day-cell { padding: 10px; border-radius: 10px; background: var(--card-2); cursor: pointer; transition:.15s; min-height:44px; display:flex; align-items:flex-start; justify-content:flex-start; position: relative; }
-    .day-cell:hover { background: var(--red-3); transform: translateY(-1px); }
-    .today { background: var(--red-5) !important; color:#fff; font-weight: 700; }
-
-    .form { margin-top: 14px; display:flex; flex-wrap:wrap; gap: 8px; justify-content:center; }
+    .form { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:10px; }
     input, select, button.primary { padding:12px; border-radius:10px; border:1px solid var(--red-3); font-size:1em; min-height:44px; }
-    button.primary { background: var(--red-5); color:#fff; border:none; cursor:pointer; font-weight:800; }
-    button.primary:hover { filter: brightness(1.05); }
+    button.primary { background: var(--red-5); color:#fff; border:none; cursor:pointer; font-weight:700; }
+    button.primary:hover { filter: brightness(1.1); }
 
-    .toolbar { display:flex; gap:8px; justify-content:center; align-items:center; margin:10px 0; flex-wrap:wrap; }
-    .muted { color: var(--muted); }
+    ul.list { list-style:none; padding:0; margin-top:12px; }
+    .item { background: var(--card-2); border-radius:10px; padding:10px; margin:6px 0; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+    .item.done { opacity:.6; text-decoration: line-through; }
+    .badge { padding:4px 8px; border-radius:8px; font-size:.8em; margin-right:6px; background: var(--red-2); }
+    .dot { width:10px; height:10px; border-radius:50%; display:inline-block; margin-left:6px; }
+    .high{ background:var(--bad);} .medium{ background:var(--warn);} .low{ background:var(--ok);}
+    .delete-btn { background: var(--red-5); color:#fff; border:none; border-radius:8px; padding:6px 10px; cursor:pointer; font-size:.85em; }
+    .delete-btn:hover { background: var(--red-4); }
 
-    ul.list { list-style:none; padding:0; margin:12px 0 0; max-height:240px; overflow:auto; }
-    .item { background: var(--card-2); border-radius:12px; padding:10px; margin:6px 0; display:flex; justify-content:space-between; align-items:center; gap:10px; min-height:44px; }
-    .item.done { opacity:.55; text-decoration: line-through; }
-    .badge { padding:4px 8px; border-radius:999px; font-size:.8em; margin-right:6px; background: var(--red-2); }
-    .Homework { background:#ffd6d6; } .Project{ background:#ffb3b3; } .Exam{ background:#ffa8a8; } .Reminder{ background:#ffcccc; }
-    .dot { width:10px; height:10px; border-radius:50%; display:inline-block; margin-left:8px; }
-    .high{ background: var(--bad); } .medium{ background: var(--warn);} .low{ background: var(--ok);}  
+    .bulk-delete { display:block; width:100%; background: var(--red-5); color:white; border:none; border-radius:10px; padding:12px; margin-top:10px; cursor:pointer; font-weight:700; }
+    .bulk-delete:hover { background: var(--red-4); }
 
-    /* Weekly View */
-    .week-header{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin: 6px 0 10px; flex-wrap:wrap; }
-    .week-title{ font-weight:800; color: var(--red-5); }
-    .week-nav button{ background: var(--red-2); border:none; padding:10px 14px; border-radius:10px; min-height:44px; cursor:pointer; }
-    .day-group{ background: var(--card-2); border:1px solid var(--red-3); border-radius:12px; padding:10px; margin:8px 0; }
-    .day-group h3{ margin:0 0 8px; color: var(--red-5); font-size:1em; }
-
-    /* Modal */
-    .modal-backdrop{ position:fixed; inset:0; background: rgba(0,0,0,.28); display:none; align-items:center; justify-content:center; padding:16px; z-index: 30; }
-    .modal{ background:#fff; width:min(680px, 100%); border-radius:16px; padding:16px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-    .modal header{ display:flex; justify-content:space-between; align-items:center; margin:0 0 10px; }
-    .modal h2{ color: var(--red-5); font-size:1.2em; margin:0; }
-    .modal textarea{ width:100%; min-height:180px; border:1px solid var(--red-3); border-radius:12px; padding:12px; background: var(--card-2); font-size:.96em; }
-    .modal .actions{ display:flex; gap:8px; justify-content:flex-end; margin-top:10px; }
-    .ghost{ background: var(--red-2); color: var(--ink); border:1px solid var(--red-3); }
-
-    /* Lock Screen */
-    .lock { position: fixed; inset: 0; display: grid; place-items: center; background: linear-gradient(145deg, var(--red-1), var(--red-2)); z-index: 40; padding: 20px; }
-    .lock-card { background: var(--card); width: min(560px, 100%); border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(217,58,58,.25); text-align: center; }
-    .lock h2 { margin: 0 0 6px; color: var(--red-5); }
-    .lock p { margin: 0 0 14px; color: var(--muted); }
-    .lock input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--red-3); font-size: 1em; min-height: 44px; }
-    .lock .actions { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
-    .shake { animation: shake .35s ease; }
-    @keyframes shake { 10%, 90% {transform: translateX(-1px);} 20%, 80% {transform: translateX(2px);} 30%, 50%, 70% {transform: translateX(-4px);} 40%, 60% {transform: translateX(4px);} }
-
-    @media (max-width: 600px){
-      .app{ padding:12px; }
-      header h1{ font-size:1.25em; }
-      .weekdays div, .day-cell{ font-size:.85em; }
-      .form{ flex-direction:column; }
-      input, select, button.primary{ width:100%; }
-    }
+    @media (max-width:600px){ .app{padding:12px;} header h1{font-size:1.25em;} input,select,button{width:100%;} }
   </style>
 </head>
 <body>
-  <!-- Lock Screen -->
-  <div class="lock" id="lockScreen" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
-    <div class="lock-card" id="lockCard">
-      <h2 id="lockTitle">Olivia Sims — Secure Calendar</h2>
+  <div class="lock" id="lockScreen" style="position:fixed;inset:0;display:grid;place-items:center;background:linear-gradient(145deg,#ffe5e5,#ffd6d6);z-index:40;">
+    <div style="background:#fffafa;padding:20px;border-radius:20px;text-align:center;box-shadow:0 10px 30px rgba(217,58,58,.25);max-width:400px;width:100%;">
+      <h2 style="color:#d93a3a;margin-bottom:10px;">Olivia Sims — Secure Calendar</h2>
       <p>Enter your password to access your calendar.</p>
-      <input id="lockInput" type="password" placeholder="Password" autocomplete="current-password" />
-      <div class="actions">
-        <button class="primary" id="unlockBtn" aria-label="Unlock">Unlock</button>
-      </div>
+      <input type="password" id="lockInput" placeholder="Password" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ffcccc;margin-bottom:10px;">
+      <button id="unlockBtn" style="background:#d93a3a;color:#fff;padding:10px 16px;border:none;border-radius:8px;cursor:pointer;font-weight:700;">Unlock</button>
     </div>
   </div>
 
-  <main class="app" role="application" id="appRoot" hidden>
-    <!-- Tabs -->
-    <nav class="tabs" role="tablist" aria-label="Views">
-      <button class="tab-btn" id="tabCalendar" role="tab" aria-controls="viewCalendar" aria-selected="true">Calendar View</button>
-      <button class="tab-btn" id="tabWeekly" role="tab" aria-controls="viewWeekly" aria-selected="false">Weekly View</button>
+  <main class="app" id="appRoot" hidden>
+    <nav class="tabs">
+      <button class="tab-btn" id="tabCalendar" aria-selected="true">Calendar View</button>
+      <button class="tab-btn" id="tabWeekly" aria-selected="false">Weekly View</button>
     </nav>
 
-    <!-- Calendar View -->
-    <section id="viewCalendar" role="tabpanel" aria-labelledby="tabCalendar">
+    <section id="viewCalendar">
       <header>
-        <div class="nav-buttons"><button id="prevMonth" aria-label="Previous month">⟨</button></div>
+        <div class="nav-buttons"><button id="prevMonth">⟨</button></div>
         <h1 id="monthYear">Olivia's School Tasks</h1>
-        <div class="nav-buttons"><button id="nextMonth" aria-label="Next month">⟩</button></div>
+        <div class="nav-buttons"><button id="nextMonth">⟩</button></div>
       </header>
       <p class="quote" id="quote"></p>
-
       <div class="weekdays" id="weekdayRow"></div>
       <div class="days" id="days"></div>
 
-      <div class="toolbar">
-        <button class="primary ghost" id="openBulk">Bulk Upload Tasks</button>
-      </div>
-
-      <div class="form" aria-label="Add task">
-        <input type="text" id="taskTitle" placeholder="Task title" />
-        <input type="date" id="taskDate" />
+      <div class="form">
+        <input id="taskTitle" type="text" placeholder="Task title">
+        <input id="taskDate" type="date">
         <select id="taskCategory">
-          <option value="Homework">Homework</option>
-          <option value="Project">Project</option>
-          <option value="Exam">Exam</option>
-          <option value="Reminder">Reminder</option>
+          <option>Homework</option><option>Project</option><option>Exam</option><option>Reminder</option>
         </select>
         <select id="taskPriority">
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
+          <option>low</option><option>medium</option><option>high</option>
         </select>
         <button class="primary" id="addTask">Add Task</button>
       </div>
 
       <ul class="list" id="taskList"></ul>
+      <button class="bulk-delete" id="deleteCompleted">Delete All Completed Tasks</button>
     </section>
 
-    <!-- Weekly View -->
-    <section id="viewWeekly" role="tabpanel" aria-labelledby="tabWeekly" hidden>
-      <div class="week-header">
-        <div class="week-nav">
-          <button id="prevWeek">Prev Week</button>
-        </div>
-        <div class="week-title" id="weekTitle">This Week</div>
-        <div class="week-nav">
-          <button id="nextWeek">Next Week</button>
-        </div>
+    <section id="viewWeekly" hidden>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <button id="prevWeek" class="primary" style="background:#ffd6d6;color:#3c0a0a;">Prev Week</button>
+        <div id="weekTitle" style="font-weight:700;color:#d93a3a;">This Week</div>
+        <button id="nextWeek" class="primary" style="background:#ffd6d6;color:#3c0a0a;">Next Week</button>
       </div>
       <div id="weeklyContainer"></div>
+      <button class="bulk-delete" id="deleteCompletedWeekly">Delete All Completed Tasks</button>
     </section>
-
-    <!-- Bulk Upload Modal -->
-    <div class="modal-backdrop" id="bulkModal" role="dialog" aria-modal="true" aria-labelledby="bulkTitle">
-      <div class="modal">
-        <header>
-          <h2 id="bulkTitle">Bulk Upload Tasks</h2>
-          <button class="tab-btn" id="closeBulk" aria-label="Close">✖</button>
-        </header>
-        <p class="muted">Paste one task per line in the format: <code>Title,YYYY-MM-DD,Category,Priority</code></p>
-        <textarea id="bulkInput" placeholder="Title,YYYY-MM-DD,Category,Priority\nEssay,2025-10-28,Project,low"></textarea>
-        <div id="bulkErrors" class="muted" aria-live="polite" style="margin-top:6px"></div>
-        <div class="actions">
-          <button class="tab-btn ghost" id="bulkClear">Clear</button>
-          <button class="tab-btn" id="bulkImport">Import Tasks</button>
-        </div>
-      </div>
-    </div>
   </main>
 
   <script>
   (function(){
-    // ===== Password Gate =====
     const PASSWORD = 'Moana0121';
     const lock = document.getElementById('lockScreen');
-    const lockCard = document.getElementById('lockCard');
-    const lockInput = document.getElementById('lockInput');
+    const input = document.getElementById('lockInput');
     const unlockBtn = document.getElementById('unlockBtn');
-    const appRoot = document.getElementById('appRoot');
+    const app = document.getElementById('appRoot');
 
-    function unlock(){
-      const ok = lockInput.value === PASSWORD;
-      if(ok){ lock.style.display='none'; appRoot.hidden=false; try{ localStorage.setItem('olivia_authed','1'); }catch{} initApp(); }
-      else { lockCard.classList.remove('shake'); void lockCard.offsetWidth; lockCard.classList.add('shake'); lockInput.value=''; lockInput.focus(); }
-    }
+    unlockBtn.onclick = ()=>{ if(input.value===PASSWORD){lock.remove();app.hidden=false;init();} else alert('Incorrect password'); };
+    input.addEventListener('keydown', e=>{if(e.key==='Enter')unlockBtn.click();});
 
-    unlockBtn.addEventListener('click', unlock);
-    lockInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') unlock(); });
+    function init(){
+      const STORAGE_KEY='schoolTasks_OliviaSims';
+      let tasks=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+      const save=()=>localStorage.setItem(STORAGE_KEY,JSON.stringify(tasks));
 
-    // Auto-unlock for session convenience
-    try{ if(localStorage.getItem('olivia_authed')==='1'){ lock.style.display='none'; appRoot.hidden=false; } }catch{}
+      const days=document.getElementById('days'),monthYear=document.getElementById('monthYear'),quote=document.getElementById('quote');
+      const taskList=document.getElementById('taskList');
+      const addTask=document.getElementById('addTask');
+      const title=document.getElementById('taskTitle');
+      const date=document.getElementById('taskDate');
+      const cat=document.getElementById('taskCategory');
+      const pri=document.getElementById('taskPriority');
+      const delCompleted=document.getElementById('deleteCompleted');
+      const delCompletedW=document.getElementById('deleteCompletedWeekly');
+      const tabC=document.getElementById('tabCalendar');
+      const tabW=document.getElementById('tabWeekly');
+      const viewC=document.getElementById('viewCalendar');
+      const viewW=document.getElementById('viewWeekly');
+      const prevM=document.getElementById('prevMonth');
+      const nextM=document.getElementById('nextMonth');
+      const prevW=document.getElementById('prevWeek');
+      const nextW=document.getElementById('nextWeek');
+      const weekT=document.getElementById('weekTitle');
+      const weekC=document.getElementById('weeklyContainer');
+      let viewMonth=new Date();
+      let weekAnchor=startOfWeek(new Date());
 
-    // ===== Elements =====
-    const tabCalendar = document.getElementById('tabCalendar');
-    const tabWeekly = document.getElementById('tabWeekly');
-    const viewCalendar = document.getElementById('viewCalendar');
-    const viewWeekly = document.getElementById('viewWeekly');
+      const quotes=["Keep going, Olivia!","One assignment at a time.","You got this.","Stay focused and breathe."];
+      const fmt=(d,o)=>new Intl.DateTimeFormat(undefined,o).format(d);
+      const ymd=d=>d.toISOString().slice(0,10);
+      const parse=s=>new Date(s+'T00:00:00');
+      const startOfWeek=d=>{let x=new Date(d);const g=x.getDay();x.setDate(x.getDate()-(g===0?6:g-1));return x;};
 
-    const monthYear = document.getElementById('monthYear');
-    const prevMonth = document.getElementById('prevMonth');
-    const nextMonth = document.getElementById('nextMonth');
-    const daysEl = document.getElementById('days');
-    const weekdayRow = document.getElementById('weekdayRow');
-    const quote = document.getElementById('quote');
-
-    const addTaskBtn = document.getElementById('addTask');
-    const taskTitle = document.getElementById('taskTitle');
-    const taskDate = document.getElementById('taskDate');
-    const taskCategory = document.getElementById('taskCategory');
-    const taskPriority = document.getElementById('taskPriority');
-    const taskList = document.getElementById('taskList');
-
-    const openBulk = document.getElementById('openBulk');
-    const bulkModal = document.getElementById('bulkModal');
-    const closeBulk = document.getElementById('closeBulk');
-    const bulkInput = document.getElementById('bulkInput');
-    const bulkImport = document.getElementById('bulkImport');
-    const bulkErrors = document.getElementById('bulkErrors');
-    const bulkClear = document.getElementById('bulkClear');
-
-    // Weekly
-    const prevWeekBtn = document.getElementById('prevWeek');
-    const nextWeekBtn = document.getElementById('nextWeek');
-    const weekTitle = document.getElementById('weekTitle');
-    const weeklyContainer = document.getElementById('weeklyContainer');
-
-    // Data
-    const STORAGE_KEY = 'schoolTasks_OliviaSims';
-    const QUOTES = [
-      "Keep going, Olivia. You're doing great.",
-      "One assignment at a time.",
-      "You can handle this.",
-      "Small steps add up.",
-      "Stay focused and take a breath."
-    ];
-    const CATEGORIES = new Set(['Homework','Project','Exam','Reminder']);
-    const PRIORITIES = new Set(['low','medium','high']);
-
-    const TODAY = new Date();
-    let viewMonth = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
-    let tasks = [];
-    try{ tasks = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch{ tasks=[]; }
-
-    let activeTab = localStorage.getItem('uiTab_Olivia') || 'calendar';
-
-    // Helpers
-    const fmt = (d, opts) => new Intl.DateTimeFormat(undefined, opts).format(d);
-    const ymd = d => d.toISOString().slice(0,10);
-    const parseDate = s => { const m = /^\d{4}-\d{2}-\d{2}$/.test(s) ? new Date(s+'T00:00:00') : null; return m && !isNaN(m) ? m : null; };
-    function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); }catch{} }
-
-    function setTab(tab){
-      activeTab = tab;
-      localStorage.setItem('uiTab_Olivia', tab);
-      const calActive = tab==='calendar';
-      tabCalendar.setAttribute('aria-selected', calActive);
-      tabWeekly.setAttribute('aria-selected', !calActive);
-      viewCalendar.hidden = !calActive; viewWeekly.hidden = calActive;
-    }
-
-    // Calendar
-    function renderCalendar(){
-      const W = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-      weekdayRow.innerHTML = W.map(w=>`<div>${w}</div>`).join('');
-
-      monthYear.textContent = `${fmt(viewMonth,{month:'long'})} ${viewMonth.getFullYear()}`;
-
-      const year = viewMonth.getFullYear();
-      const month = viewMonth.getMonth();
-      const firstDay = new Date(year, month, 1).getDay();
-      const lastDate = new Date(year, month+1, 0).getDate();
-      daysEl.innerHTML = '';
-      for(let i=0;i<firstDay;i++){ const e=document.createElement('div'); e.className='day-cell'; e.style.visibility='hidden'; daysEl.appendChild(e); }
-      for(let d=1; d<=lastDate; d++){
-        const cell = document.createElement('div');
-        cell.className = 'day-cell';
-        cell.textContent = d;
-        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        if(ymd(new Date())===dateStr){ cell.classList.add('today'); }
-        cell.addEventListener('click', ()=> quickAdd(dateStr));
-        daysEl.appendChild(cell);
+      function renderCal(){
+        days.innerHTML=''; const y=viewMonth.getFullYear(),m=viewMonth.getMonth();
+        monthYear.textContent=`${fmt(viewMonth,{month:'long'})} ${y}`;
+        const first=new Date(y,m,1).getDay(); const last=new Date(y,m+1,0).getDate();
+        for(let i=0;i<first;i++){const e=document.createElement('div');e.className='day-cell';e.style.visibility='hidden';days.appendChild(e);}
+        for(let d=1;d<=last;d++){const e=document.createElement('div');e.className='day-cell';e.textContent=d;const s=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;if(ymd(new Date())===s)e.classList.add('today');e.onclick=()=>quickAdd(s);days.appendChild(e);}
+        renderTasks(); quote.textContent=quotes[Math.floor(Math.random()*quotes.length)];
       }
-      renderTasks();
-      quote.textContent = QUOTES[Math.floor(Math.random()*QUOTES.length)];
-    }
 
-    function quickAdd(dateStr){
-      const t = prompt('Add a task for '+dateStr+':');
-      if(!t) return;
-      tasks.push({ title:t.trim(), date:dateStr, category:'Homework', priority:'medium', done:false });
-      save(); renderTasks(); if(activeTab==='weekly') renderWeekly();
-    }
-
-    function renderTasks(){
-      taskList.innerHTML='';
-      if(!tasks.length){ taskList.innerHTML = '<li class="item">No tasks yet</li>'; return; }
-      const sorted = [...tasks].sort((a,b)=> a.date.localeCompare(b.date));
-      for(const t of sorted){
-        const li = document.createElement('li');
-        li.className = 'item'+(t.done?' done':'');
-        li.innerHTML = `<div><span class=\"badge ${t.category}\">${t.category}</span><strong>${escapeHtml(t.title)}</strong> (${t.date}) <span class=\"dot ${t.priority}\"></span></div><div><input type=\"checkbox\" ${t.done?'checked':''}></div>`;
-        li.querySelector('input').addEventListener('change', ()=>{ t.done=!t.done; save(); renderTasks(); if(activeTab==='weekly') renderWeekly(); });
-        li.addEventListener('dblclick', ()=>{ if(confirm('Delete this task?')){ tasks = tasks.filter(x=>x!==t); save(); renderTasks(); if(activeTab==='weekly') renderWeekly(); }});
-        taskList.appendChild(li);
-      }
-    }
-
-    function escapeHtml(s){ return s.replace(/[&<>\"]/g, c=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]) ); }
-
-    // Add task form
-    addTaskBtn.addEventListener('click', ()=>{
-      const title = (taskTitle.value||'').trim();
-      const date = taskDate.value;
-      const category = taskCategory.value;
-      const priority = taskPriority.value;
-      if(!title || !date) return alert('Please fill out both title and date');
-      tasks.push({ title, date, category, priority, done:false });
-      save(); taskTitle.value=''; taskDate.value=''; renderTasks(); if(activeTab==='weekly') renderWeekly();
-    });
-
-    // Month navigation
-    prevMonth.addEventListener('click', ()=>{ viewMonth.setMonth(viewMonth.getMonth()-1); renderCalendar(); });
-    nextMonth.addEventListener('click', ()=>{ viewMonth.setMonth(viewMonth.getMonth()+1); renderCalendar(); });
-
-    // Bulk modal
-    openBulk.addEventListener('click', ()=>{ bulkModal.style.display='flex'; bulkInput.focus(); });
-    closeBulk.addEventListener('click', ()=>{ bulkModal.style.display='none'; bulkErrors.textContent=''; });
-    bulkClear.addEventListener('click', ()=>{ bulkInput.value=''; bulkErrors.textContent=''; });
-    bulkImport.addEventListener('click', ()=>{
-      const lines = bulkInput.value.split(/\n+/).map(l=>l.trim()).filter(Boolean);
-      let ok=0, bad=0; let msgs=[];
-      for(const line of lines){
-        const parts = line.split(',').map(x=>x.trim());
-        if(parts.length<2){ bad++; msgs.push(`Invalid: "${line}"`); continue; }
-        const [title,date,category='Homework',priority='medium'] = parts;
-        const d=parseDate(date); if(!d){ bad++; msgs.push(`Bad date: "${line}"`); continue; }
-        const catOk = CATEGORIES.has(category); const priOk = PRIORITIES.has(priority);
-        tasks.push({ title, date: ymd(d), category: catOk?category:'Homework', priority: priOk?priority:'medium', done:false });
-        ok++;
-      }
-      save(); renderTasks(); if(activeTab==='weekly') renderWeekly();
-      bulkErrors.textContent = `Imported ${ok} task(s). ${bad? bad+" line(s) skipped." : ''}`;
-      if(ok && !bad){ bulkModal.style.display='none'; bulkInput.value=''; }
-    });
-
-    // Weekly View
-    let weekAnchor = startOfWeek(new Date()); // Monday start
-    function startOfWeek(d){
-      const tmp = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-      const day = tmp.getDay(); // 0 Sun .. 6 Sat
-      const diff = (day===0? -6 : 1 - day);
-      tmp.setDate(tmp.getDate()+diff); tmp.setHours(0,0,0,0); return tmp;
-    }
-
-    function renderWeekly(){
-      weeklyContainer.innerHTML='';
-      const start = new Date(weekAnchor);
-      const end = new Date(start); end.setDate(end.getDate()+6);
-      weekTitle.textContent = `${fmt(start,{month:'short', day:'numeric'})} – ${fmt(end,{month:'short', day:'numeric', year:'numeric'})}`;
-      for(let i=0;i<7;i++){
-        const dayDate = new Date(start); dayDate.setDate(start.getDate()+i);
-        const dateStr = ymd(dayDate);
-        const group = document.createElement('div'); group.className='day-group';
-        const label = dayDate.toLocaleDateString(undefined,{weekday:'long', month:'short', day:'numeric'});
-        group.innerHTML = `<h3>${label}</h3>`;
-        const todays = tasks.filter(t=>t.date===dateStr).sort((a,b)=> (a.priority>b.priority? -1:1));
-        if(!todays.length){ const empty=document.createElement('div'); empty.className='muted'; empty.textContent='No tasks'; group.appendChild(empty); }
-        else for(const t of todays){
-          const row = document.createElement('div'); row.className='item'+(t.done?' done':'');
-          row.innerHTML = `<div><span class=\"badge ${t.category}\">${t.category}</span><strong>${escapeHtml(t.title)}</strong><span class=\"dot ${t.priority}\"></span></div><div><input type=\"checkbox\" ${t.done?'checked':''}></div>`;
-          row.querySelector('input').addEventListener('change', ()=>{ t.done=!t.done; save(); renderWeekly(); renderTasks(); });
-          row.addEventListener('dblclick', ()=>{ if(confirm('Delete this task?')){ tasks = tasks.filter(x=>x!==t); save(); renderWeekly(); renderTasks(); }});
-          group.appendChild(row);
+      function quickAdd(s){const t=prompt('Add a task for '+s+':');if(t){tasks.push({title:t,date:s,category:'Homework',priority:'medium',done:false});save();renderTasks();renderWeek();}}
+      function renderTasks(){
+        taskList.innerHTML=''; if(!tasks.length){taskList.innerHTML='<li class=\"item\">No tasks</li>';return;}
+        for(const t of tasks.sort((a,b)=>a.date.localeCompare(b.date))){
+          const li=document.createElement('li');li.className='item'+(t.done?' done':'');
+          li.innerHTML=`<div><span class='badge ${t.category}'>${t.category}</span><strong>${t.title}</strong> (${t.date}) <span class='dot ${t.priority}'></span></div>
+          <div><input type='checkbox' ${t.done?'checked':''}><button class='delete-btn'>Delete</button></div>`;
+          li.querySelector('input').onchange=()=>{t.done=!t.done;save();renderTasks();renderWeek();};
+          li.querySelector('.delete-btn').onclick=()=>{if(confirm('Delete this task?')){tasks=tasks.filter(x=>x!==t);save();renderTasks();renderWeek();}};
+          li.ondblclick=()=>{if(confirm('Delete this task?')){tasks=tasks.filter(x=>x!==t);save();renderTasks();renderWeek();}};
+          taskList.appendChild(li);
         }
-        weeklyContainer.appendChild(group);
       }
+      addTask.onclick=()=>{if(!title.value||!date.value)return alert('Enter title and date');tasks.push({title:title.value,date:date.value,category:cat.value,priority:pri.value,done:false});save();title.value='';date.value='';renderTasks();renderWeek();};
+      delCompleted.onclick=()=>{if(confirm('Delete all completed tasks?')){tasks=tasks.filter(t=>!t.done);save();renderTasks();renderWeek();}};
+      delCompletedW.onclick=()=>{if(confirm('Delete all completed tasks?')){tasks=tasks.filter(t=>!t.done);save();renderTasks();renderWeek();}};
+
+      prevM.onclick=()=>{viewMonth.setMonth(viewMonth.getMonth()-1);renderCal();};
+      nextM.onclick=()=>{viewMonth.setMonth(viewMonth.getMonth()+1);renderCal();};
+      tabC.onclick=()=>{viewC.hidden=false;viewW.hidden=true;tabC.setAttribute('aria-selected',true);tabW.setAttribute('aria-selected',false);};
+      tabW.onclick=()=>{viewC.hidden=true;viewW.hidden=false;tabC.setAttribute('aria-selected',false);tabW.setAttribute('aria-selected',true);};
+
+      prevW.onclick=()=>{weekAnchor.setDate(weekAnchor.getDate()-7);renderWeek();};
+      nextW.onclick=()=>{weekAnchor.setDate(weekAnchor.getDate()+7);renderWeek();};
+      function renderWeek(){
+        weekC.innerHTML='';const start=new Date(weekAnchor);const end=new Date(start);end.setDate(end.getDate()+6);
+        weekT.textContent=`${fmt(start,{month:'short',day:'numeric'})} - ${fmt(end,{month:'short',day:'numeric'})}`;
+        for(let i=0;i<7;i++){const d=new Date(start);d.setDate(start.getDate()+i);const s=ymd(d);
+          const div=document.createElement('div');div.style.background='#fff1f1';div.style.padding='10px';div.style.borderRadius='8px';div.style.margin='6px 0';
+          const hdr=document.createElement('h3');hdr.textContent=d.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});hdr.style.color='#d93a3a';div.appendChild(hdr);
+          const dayTasks=tasks.filter(t=>t.date===s);
+          if(!dayTasks.length){const e=document.createElement('div');e.textContent='No tasks';e.style.color='#a34747';div.appendChild(e);}else{
+            for(const t of dayTasks){
+              const r=document.createElement('div');r.className='item'+(t.done?' done':'');
+              r.innerHTML=`<div><span class='badge ${t.category}'>${t.category}</span><strong>${t.title}</strong><span class='dot ${t.priority}'></span></div>
+              <div><input type='checkbox' ${t.done?'checked':''}><button class='delete-btn'>Delete</button></div>`;
+              r.querySelector('input').onchange=()=>{t.done=!t.done;save();renderTasks();renderWeek();};
+              r.querySelector('.delete-btn').onclick=()=>{if(confirm('Delete this task?')){tasks=tasks.filter(x=>x!==t);save();renderTasks();renderWeek();}};
+              r.ondblclick=()=>{if(confirm('Delete this task?')){tasks=tasks.filter(x=>x!==t);save();renderTasks();renderWeek();}};
+              div.appendChild(r);
+            }
+          }
+          weekC.appendChild(div);
+        }
+      }
+      renderCal();renderWeek();
     }
-
-    prevWeekBtn.addEventListener('click', ()=>{ weekAnchor.setDate(weekAnchor.getDate()-7); renderWeekly(); });
-    nextWeekBtn.addEventListener('click', ()=>{ weekAnchor.setDate(weekAnchor.getDate()+7); renderWeekly(); });
-
-    // Tabs
-    tabCalendar.addEventListener('click', ()=> setTab('calendar'));
-    tabWeekly.addEventListener('click', ()=> setTab('weekly'));
-
-    function initApp(){ setTab(activeTab); renderCalendar(); renderWeekly(); }
-
-    // If auto-unlocked
-    if(!appRoot.hidden){ initApp(); }
-
-    // Keyboard shortcuts
-    window.addEventListener('keydown', (e)=>{
-      if(appRoot.hidden) return;
-      if(e.key==='ArrowLeft' && activeTab==='calendar') prevMonth.click();
-      if(e.key==='ArrowRight' && activeTab==='calendar') nextMonth.click();
-    });
   })();
   </script>
 </body>
