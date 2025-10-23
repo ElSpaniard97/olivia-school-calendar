@@ -1,1 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Task Manager — Olivia Sims</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="main-header">
+  <div class="title"><h1>Task Manager</h1></div>
+  <div class="dropdown">
+    <button>Menu ▾</button>
+    <div class="dropdown-content">
+      <a href="index.html">🏠 Calendar</a>
+      <a href="tasks.html">📝 Task Manager</a>
+      <a href="weekly.html">📅 Weekly View</a>
+      <a href="verses.html">✝️ Pinned Verses</a>
+    </div>
+  </div>
+</header>
+
+<main class="shell">
+  <section>
+    <h3>Add New Task</h3>
+    <div style="display:flex; flex-wrap:wrap; gap:8px;">
+      <input placeholder="Task title" style="flex:1; padding:10px; border:1px solid var(--line); border-radius:10px;">
+      <input type="date" style="padding:10px; border:1px solid var(--line); border-radius:10px;">
+      <select style="padding:10px; border:1px solid var(--line); border-radius:10px;">
+        <option>Homework</option><option>Project</option><option>Exam</option><option>Reminder</option>
+      </select>
+      <select style="padding:10px; border:1px solid var(--line); border-radius:10px;">
+        <option>low</option><option>medium</option><option>high</option>
+      </select>
+      <button class="btn primary">Add Task</button>
+    </div>
+    <h3 style="margin-top:20px;">Your Tasks</h3>
+    <ul style="list-style:none; padding:0;">
+      <li>No tasks yet (this will populate from JS)</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>
 
