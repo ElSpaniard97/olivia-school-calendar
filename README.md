@@ -1,115 +1,156 @@
-# Olivia Sims — School Task Calendar
+📚 Olivia Sims — School Task & Verse Calendar
 
-A secure, mobile-friendly HTML calendar and task tracker built for managing schoolwork efficiently.
-Designed in soft red tones for a clean, calm study aesthetic — with password protection and local storage for privacy.
+An elegant, multi-page planner built with HTML, CSS, and JavaScript for tracking schoolwork, weekly tasks, and daily Bible inspiration.
+Each page is beautifully themed in white and rose pink, responsive, and password-protected.
 
----
+🌸 Features
+🏠 Calendar (index.html)
 
-## ✨ Features
+Clickable monthly calendar (Monday–Sunday)
 
-* **Password Protected Access**
-  Only authorized users can view the calendar.
-  Default password: `Moana0121`
+Red dots mark days with saved tasks
 
-* **Calendar View**
+Click a day → shows tasks for that date
 
-  * Navigate months easily
-  * Add tasks directly by clicking a date
-  * Color-coded categories for Homework, Projects, Exams, and Reminders
+Live daily Bible verse from Bible.org
 
-* **Weekly View**
+“Pin Verse” button saves your favorite verses
 
-  * View tasks grouped by day (Monday–Sunday)
-  * Scroll between weeks to plan ahead
+Always-visible Notes and Birthdays side panels
 
-* **Bulk Upload Tasks**
-  Paste tasks in this format:
+📝 Task Manager (tasks.html)
 
-  ```
-  Math Homework,2025-10-25,Homework,high
-  History Project,2025-10-27,Project,medium
-  ```
+Add, delete, and view tasks
 
-  The system automatically imports and sorts them.
+Fields: Title, Date, Category, Priority
 
-* **Task Management**
+Tasks persist in browser using localStorage
 
-  * Checkboxes to mark completion
-  * Double-click to delete
-  * All tasks stored securely in your browser’s local storage
+Automatically updates Calendar and Weekly pages
 
-* **iPhone & Mobile Ready**
-  Fully responsive and optimized for touch controls.
+📅 Weekly View (weekly.html)
 
----
+Displays all tasks for the current week
 
-## 🧠 How to Use
+Navigate between weeks
 
-1. **Unlock the Calendar**
-   Open the site and enter the password:
+Updates dynamically as you add or remove tasks
 
-   ```
-   Moana0121
-   ```
+✝️ Pinned Verses (verses.html)
 
-2. **Add or Import Tasks**
+Displays pinned verses saved from the Calendar
 
-   * Use the “Add Task” form or
-   * Click “Bulk Upload” to paste multiple tasks at once
+Option to Clear All
 
-3. **Switch Views**
+Stored locally in your browser
 
-   * Use the tabs at the top to toggle between **Calendar** and **Weekly** views.
-   * Use the “Prev” and “Next” buttons to move between months or weeks.
+🔐 Security
 
-4. **Save Progress**
-   Tasks and preferences are automatically saved in your browser.
-   (No account or database required.)
+Each page is password-protected with:
 
----
+Password: Moana0121
 
-## 🔒 Privacy
 
-* All data is stored locally in your browser (`localStorage`).
-* No information is sent or stored externally.
-* Password protection limits access to authorized users.
+The session stays unlocked until you close the browser tab.
+To change the password, open script.js and modify:
 
----
+const PASSWORD = "Moana0121";
 
-## 🚀 Deployment
+🧩 Project Structure
+/
+├── index.html        # Calendar Page
+├── tasks.html        # Task Manager Page
+├── weekly.html       # Weekly View Page
+├── verses.html       # Pinned Verses Page
+├── style.css         # Shared styling (Playfair Display + Poppins)
+├── script.js         # Shared JS logic (tasks, verses, password)
+└── README.md         # Project documentation
 
-This project is a single-file HTML app.
-You can host it on **GitHub Pages** easily:
+💻 Local Setup
 
-1. Upload `index.html` to your repository.
-2. Go to **Settings → Pages**.
-3. Set source to `main` branch, folder `/ (root)`.
-4. After saving, your live link will appear like:
+Download or clone the repository:
 
-   ```
-   https://<your-username>.github.io/olivia-school-calendar/
-   ```
+git clone https://github.com/<your-username>/olivia-calendar.git
 
----
 
-## 🧩 Tech Stack
+Open any of the HTML files in your browser (e.g. index.html)
 
-* HTML5
-* CSS3 (Custom Red Theme)
-* Vanilla JavaScript
-* LocalStorage API
-* Responsive Design for iPhone and Desktop
+Enter the password Moana0121
 
----
+Your data will automatically be saved in browser storage (no backend needed)
 
-## 💡 Credits
+🌐 Deploy to GitHub Pages
+🪄 Quick Steps
 
-Created for **Olivia Sims**
-Built and designed collaboratively with ChatGPT 🩷
+Go to your GitHub repository (e.g. olivia-calendar)
 
----
+Click Settings → Pages
 
-## ⚙️ License
+Under Build and deployment, set:
 
-This project is free for personal or educational use.
-You may modify it for your own private academic purposes.
+Source: Deploy from a branch
+
+Branch: main → / (root)
+
+Click Save
+
+GitHub will generate a public link like:
+
+https://<your-username>.github.io/olivia-calendar/
+
+
+Now your planner is live and accessible on any device!
+
+🌍 Optional: Custom Domain
+
+If you want a personal URL (e.g. calendar.oliviasims.com):
+
+Buy a domain from Google Domains
+ or Namecheap
+
+In your repo, create a file named:
+
+CNAME
+
+
+Add your domain name inside (no spaces):
+
+calendar.oliviasims.com
+
+
+Set up a DNS record (CNAME → <your-username>.github.io)
+
+Wait for propagation (usually 1–2 hours)
+
+📱 Mobile Experience
+
+Optimized for iPhone and Android browsers
+
+Large tap areas (≥44px)
+
+Responsive layouts automatically adjust side panels and dropdown menus
+
+🧠 Data & Storage
+
+All tasks and verses are saved in your browser’s localStorage
+
+To clear data:
+
+On Chrome: DevTools → Application → Storage → “Clear site data”
+
+On Safari (iPhone): Settings → Safari → Advanced → Website Data → Remove
+
+🌈 Customization
+Feature	Where to Change	Example
+Theme colors	style.css	--pink, --accent, --bg
+Default password	script.js	const PASSWORD = "MyNewPassword";
+Verse API	script.js	Change the fetch URL if needed
+Fonts	style.css	Replace "Playfair Display" or "Poppins"
+📖 Credits
+
+Design: Inspired by Olivia Sims’ clean aesthetic
+Development: Built with ChatGPT (GPT-5)
+APIs: Bible.org Random Verse API
+
+Fonts: Playfair Display
+ & Poppins
