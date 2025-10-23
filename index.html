@@ -1,581 +1,546 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Olivia Sims — School Task Calendar</title>
-  <style>
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    :root{
-      --red-1:#ffe5e5; --red-2:#ffd6d6; --red-3:#ffcccc; --red-4:#ff9999; --red-5:#d93a3a;
-      --ink:#3c0a0a; --card:#fffafa; --card-2:#fff1f1; --muted:#a34747;
-      --ok:#66cc66; --warn:#ff9933; --bad:#ff3333;
-    }
-    body { font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-           background: linear-gradient(135deg, var(--red-1) 0%, var(--red-2) 100%);
-           display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; color: var(--ink); }
-    .app { width: 96%; max-width: 900px; background: var(--card); border-radius: 20px;
-           box-shadow: 0 10px 25px rgba(255, 100, 100, 0.2); overflow: hidden; padding: 16px; animation: fadeIn .6s ease; }
-    @keyframes fadeIn { from{opacity:0; transform: translateY(8px);} to{opacity:1; transform:none;} }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Olivia Sims — School Task Calendar</title>
+<style>
+/* === Base + Theme === */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --red-1:#ffe5e5;--red-2:#ffd6d6;--red-3:#ffcccc;--red-4:#ff9999;--red-5:#d93a3a;
+  --ink:#3c0a0a;--card:#fffafa;--card-2:#fff1f1;--muted:#a34747;
+  --ok:#66cc66;--warn:#ff9933;--bad:#ff3333;
+}
+body{font-family:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+      background:linear-gradient(135deg,var(--red-1) 0%,var(--red-2) 100%);
+      display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;color:var(--ink);}
+.app{width:96%;max-width:900px;background:var(--card);border-radius:20px;
+     box-shadow:0 10px 25px rgba(255,100,100,.2);overflow:hidden;padding:16px;animation:fadeIn .6s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
 
-    /* Tabs */
-    .tabs { display:flex; gap:8px; justify-content:center; margin-bottom:12px; flex-wrap:wrap; }
-    .tab-btn { border:none; cursor:pointer; background: var(--red-2); color: var(--ink);
-               padding: 10px 14px; border-radius: 999px; font-weight:700; min-height:44px; min-width:44px; }
-    .tab-btn[aria-selected="true"]{ background: var(--red-5); color:#fff; box-shadow: 0 6px 16px rgba(217,58,58,.25); }
+/* === Tabs === */
+.tabs{display:flex;gap:8px;justify-content:center;margin-bottom:12px;flex-wrap:wrap;}
+.tab-btn{border:none;cursor:pointer;background:var(--red-2);color:var(--ink);
+         padding:10px 14px;border-radius:999px;font-weight:700;min-height:44px;min-width:44px;}
+.tab-btn[aria-selected="true"]{background:var(--red-5);color:#fff;box-shadow:0 6px 16px rgba(217,58,58,.25);}
 
-    header { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
-    header h1 { color: var(--red-5); font-size: 1.5em; margin:0; text-align:center; flex:1 1 100%; }
+/* === Calendar Header === */
+.calendar-header{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;margin-bottom:10px;}
+.calendar-header h1{text-align:center;font-size:1.5em;color:var(--red-5);margin:0;}
+.nav-btn{background:none;border:none;color:var(--red-5);font-size:1.6em;cursor:pointer;
+         width:44px;height:44px;border-radius:50%;display:flex;justify-content:center;align-items:center;}
+.nav-btn:hover{background:var(--red-2);}
+.nav-btn:active{transform:scale(.9);}
 
-    .nav-buttons button { background: var(--red-2); border:none; padding:12px 18px; border-radius:50%;
-                          font-size:1.4em; color:var(--red-5); cursor:pointer; min-height:44px; min-width:44px; }
+/* Verse + Calendar grid */
+.verse{background:var(--card-2);border:1px solid var(--red-3);border-radius:12px;padding:12px;margin:8px 0 12px;}
+.verse-ref{color:var(--red-5);font-weight:700;margin-bottom:6px;}
+.verse-text{font-style:italic;}
+.weekdays,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
+.weekdays div{color:var(--red-5);font-weight:700;text-align:center;}
+.day-cell{position:relative;padding:12px 10px;border-radius:10px;background:var(--card-2);
+          cursor:pointer;min-height:56px;text-align:center;}
+.day-cell:hover{background:var(--red-3);}
+.today{background:var(--red-5);color:#fff;font-weight:700;}
+.task-dot{position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--red-5);}
 
-    /* Verse block */
-    .verse { background: var(--card-2); border:1px solid var(--red-3); border-radius:12px; padding:12px; margin:8px 0 12px; }
-    .verse-ref { color: var(--red-5); font-weight:700; margin-bottom:6px; }
-    .verse-text { font-style: italic; }
+/* Buttons / forms */
+.ghost{background:var(--red-2);color:var(--ink);border:1px solid var(--red-3);border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:700;}
+input,select,button.primary{padding:12px;border-radius:10px;border:1px solid var(--red-3);font-size:1em;min-height:44px;}
+button.primary{background:var(--red-5);color:#fff;border:none;cursor:pointer;font-weight:700;}
+button.primary:hover{filter:brightness(1.07);}
 
-    /* Calendar grid */
-    .weekdays, .days { display:grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
-    .weekdays div { color: var(--red-5); font-weight: 700; text-align:center; }
-    .day-cell { position:relative; padding: 12px 10px; border-radius: 10px; background: var(--card-2); cursor: pointer; min-height:56px; text-align:center; }
-    .day-cell:hover { background: var(--red-3); }
-    .today { background: var(--red-5); color:#fff; font-weight:700; }
-    .task-dot { position:absolute; top:6px; right:6px; width:6px; height:6px; border-radius:50%; background: var(--red-5); }
+ul.list{list-style:none;padding:0;margin-top:12px;}
+.item{background:var(--card-2);border-radius:10px;padding:10px;margin:6px 0;
+      display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.item.done{opacity:.6;text-decoration:line-through;}
+.badge{padding:4px 8px;border-radius:8px;font-size:.8em;margin-right:6px;background:var(--red-2);}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-left:6px;}
+.high{background:var(--bad);} .medium{background:var(--warn);} .low{background:var(--ok);}
+.delete-btn{background:var(--red-5);color:#fff;border:none;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:.85em;}
+.delete-btn:hover{background:var(--red-4);}
+.bulk-delete{display:block;width:100%;background:var(--red-5);color:white;border:none;border-radius:10px;padding:12px;margin-top:10px;cursor:pointer;font-weight:700;}
+.bulk-delete:hover{background:var(--red-4);}
 
-    /* Buttons / form shared */
-    .ghost { background: var(--red-2); color: var(--ink); border:1px solid var(--red-3); border-radius:10px; padding:10px 14px; cursor:pointer; font-weight:700; }
-    .form { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:10px; }
-    input, select, button.primary { padding:12px; border-radius:10px; border:1px solid var(--red-3); font-size:1em; min-height:44px; }
-    button.primary { background: var(--red-5); color:#fff; border:none; cursor:pointer; font-weight:700; border-radius:10px; }
-    button.primary:hover { filter: brightness(1.07); }
+/* Modal */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.28);display:none;align-items:center;justify-content:center;padding:16px;z-index:30;}
+.modal{background:#fff;width:min(680px, 100%);border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.25);}
+.modal header{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px;}
+.modal h2{color:var(--red-5);font-size:1.2em;margin:0;}
+.modal textarea{width:100%;min-height:180px;border:1px solid var(--red-3);border-radius:12px;padding:12px;background:var(--card-2);font-size:.96em;}
+.modal .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px;}
 
-    ul.list { list-style:none; padding:0; margin-top:12px; }
-    .item { background: var(--card-2); border-radius:10px; padding:10px; margin:6px 0;
-            display:flex; justify-content:space-between; align-items:center; gap:10px; }
-    .item.done { opacity:.6; text-decoration: line-through; }
-    .badge { padding:4px 8px; border-radius:8px; font-size:.8em; margin-right:6px; background: var(--red-2); }
-    .dot { width:10px; height:10px; border-radius:50%; display:inline-block; margin-left:6px; }
-    .high{ background:var(--bad);} .medium{ background:var(--warn);} .low{ background:var(--ok);}
-    .delete-btn { background: var(--red-5); color:#fff; border:none; border-radius:8px; padding:6px 10px; cursor:pointer; font-size:.85em; }
-    .delete-btn:hover { background: var(--red-4); }
-    .bulk-delete { display:block; width:100%; background: var(--red-5); color:white; border:none; border-radius:10px; padding:12px; margin-top:10px; cursor:pointer; font-weight:700; }
-    .bulk-delete:hover { background: var(--red-4); }
+/* Lock screen */
+.lock{position:fixed;inset:0;display:grid;place-items:center;
+      background:linear-gradient(145deg,var(--red-1),var(--red-2));z-index:40;padding:20px;}
+.lock-card{background:var(--card);width:min(560px,100%);border-radius:20px;padding:20px;
+           box-shadow:0 10px 30px rgba(217,58,58,.25);text-align:center;}
+.lock h2{margin:0 0 6px;color:var(--red-5);}
+.lock p{margin:0 0 14px;color:var(--muted);}
+.lock input{width:100%;padding:12px;border-radius:12px;border:1px solid var(--red-3);font-size:1em;min-height:44px;}
+.lock .actions{display:flex;gap:8px;justify-content:center;margin-top:12px;}
+.shake{animation:shake .35s ease;}
+@keyframes shake{10%,90%{transform:translateX(-1px);}20%,80%{transform:translateX(2px);}
+ 30%,50%,70%{transform:translateX(-4px);}40%,60%{transform:translateX(4px);}}
 
-    /* Modal */
-    .modal-backdrop{ position:fixed; inset:0; background: rgba(0,0,0,.28); display:none; align-items:center; justify-content:center; padding:16px; z-index: 30; }
-    .modal{ background:#fff; width:min(680px, 100%); border-radius:16px; padding:16px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-    .modal header{ display:flex; justify-content:space-between; align-items:center; margin:0 0 10px; }
-    .modal h2{ color: var(--red-5); font-size:1.2em; margin:0; }
-    .modal textarea{ width:100%; min-height:180px; border:1px solid var(--red-3); border-radius:12px; padding:12px; background: var(--card-2); font-size:.96em; }
-    .modal .actions{ display:flex; gap:8px; justify-content:flex-end; margin-top:10px; }
-
-    /* Lock Screen */
-    .lock { position: fixed; inset: 0; display: grid; place-items: center;
-            background: linear-gradient(145deg, var(--red-1), var(--red-2)); z-index: 40; padding: 20px; }
-    .lock-card { background: var(--card); width: min(560px, 100%); border-radius: 20px; padding: 20px;
-                 box-shadow: 0 10px 30px rgba(217,58,58,.25); text-align: center; }
-    .lock h2 { margin: 0 0 6px; color: var(--red-5); }
-    .lock p { margin: 0 0 14px; color: var(--muted); }
-    .lock input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--red-3); font-size: 1em; min-height: 44px; }
-    .lock .actions { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
-    .shake { animation: shake .35s ease; }
-    @keyframes shake { 10%, 90% {transform: translateX(-1px);} 20%, 80% {transform: translateX(2px);} 30%, 50%, 70% {transform: translateX(-4px);} 40%, 60% {transform: translateX(4px);} }
-
-    @media (max-width: 600px){
-      .app{ padding:12px; }
-      header h1{ font-size:1.25em; }
-      .weekdays div, .day-cell{ font-size:.85em; }
-      .form{ flex-direction:column; }
-      input, select, button.primary{ width:100%; }
-    }
-  </style>
+/* Responsive */
+@media(max-width:600px){
+  .app{padding:12px;}
+  .calendar-header h1{font-size:1.25em;}
+  .tabs{gap:6px;}
+}
+</style>
 </head>
 <body>
-  <!-- Lock Screen -->
-  <div class="lock" id="lockScreen" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
-    <div class="lock-card" id="lockCard">
-      <h2 id="lockTitle">Olivia Sims — Secure Calendar</h2>
-      <p>Enter your password to access your calendar.</p>
-      <input id="lockInput" type="password" placeholder="Password" autocomplete="current-password" />
+<!-- Password Lock -->
+<div class="lock" id="lockScreen" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
+  <div class="lock-card" id="lockCard">
+    <h2 id="lockTitle">Olivia Sims — Secure Calendar</h2>
+    <p>Enter your password to access your calendar.</p>
+    <input id="lockInput" type="password" placeholder="Password" autocomplete="current-password" />
+    <div class="actions"><button class="primary" id="unlockBtn">Unlock</button></div>
+  </div>
+</div>
+
+<main class="app" role="application" id="appRoot" hidden>
+  <!-- Tabs -->
+  <nav class="tabs" role="tablist" aria-label="Views">
+    <button class="tab-btn" id="tabCalendar" role="tab" aria-controls="viewCalendar" aria-selected="true">Calendar View</button>
+    <button class="tab-btn" id="tabTasks" role="tab" aria-controls="viewTasks" aria-selected="false">Task Manager</button>
+    <button class="tab-btn" id="tabWeekly" role="tab" aria-controls="viewWeekly" aria-selected="false">Weekly View</button>
+    <button class="tab-btn" id="tabVerses" role="tab" aria-controls="viewVerses" aria-selected="false">Pinned Verses</button>
+  </nav>
+
+  <!-- Calendar View -->
+  <section id="viewCalendar" role="tabpanel" aria-labelledby="tabCalendar">
+    <div class="calendar-header">
+      <button class="nav-btn" id="prevMonth" aria-label="Previous month">⟨</button>
+      <h1 id="monthYear">Month YYYY</h1>
+      <button class="nav-btn" id="nextMonth" aria-label="Next month">⟩</button>
+    </div>
+
+    <!-- Daily verse with pin + new -->
+    <div class="verse" id="verseBlock">
+      <div class="verse-ref" id="verseRef">Verse</div>
+      <div class="verse-text" id="verseText"></div>
+      <div style="margin-top:8px;display:flex;gap:8px;justify-content:flex-end;">
+        <button class="ghost" id="pinVerseBtn">Pin Verse</button>
+        <button class="ghost" id="newVerseBtn">New Verse</button>
+        <button class="ghost" id="openBulkFromCalendar">Bulk Upload</button>
+      </div>
+    </div>
+
+    <div class="weekdays" id="weekdayRow"></div>
+    <div class="days" id="days"></div>
+  </section>
+
+  <!-- Task Manager -->
+  <section id="viewTasks" role="tabpanel" aria-labelledby="tabTasks" hidden>
+    <div class="form" aria-label="Add task">
+      <input type="text" id="taskTitle" placeholder="Task title" />
+      <input type="date" id="taskDate" />
+      <select id="taskCategory">
+        <option value="Homework">Homework</option>
+        <option value="Project">Project</option>
+        <option value="Exam">Exam</option>
+        <option value="Reminder">Reminder</option>
+      </select>
+      <select id="taskPriority">
+        <option value="low">low</option>
+        <option value="medium">medium</option>
+        <option value="high">high</option>
+      </select>
+      <button class="primary" id="addTask">Add Task</button>
+      <button class="ghost" id="openBulk">Bulk Upload</button>
+    </div>
+    <ul class="list" id="taskList"></ul>
+    <button class="bulk-delete" id="deleteCompleted">Delete All Completed Tasks</button>
+  </section>
+
+  <!-- Weekly View -->
+  <section id="viewWeekly" role="tabpanel" aria-labelledby="tabWeekly" hidden>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <button class="ghost" id="prevWeek">Prev Week</button>
+      <div id="weekTitle" style="font-weight:700;color:#d93a3a;">This Week</div>
+      <button class="ghost" id="nextWeek">Next Week</button>
+    </div>
+    <div id="weeklyContainer"></div>
+    <button class="bulk-delete" id="deleteCompletedWeekly">Delete All Completed Tasks</button>
+  </section>
+
+  <!-- Pinned Verses -->
+  <section id="viewVerses" role="tabpanel" aria-labelledby="tabVerses" hidden>
+    <h3 style="color:var(--red-5);margin:0 0 8px;">Pinned Verses</h3>
+    <div id="pinnedList"></div>
+    <button class="bulk-delete" id="clearPinned">Clear All Pinned Verses</button>
+  </section>
+
+  <!-- Bulk Upload Modal (shared) -->
+  <div class="modal-backdrop" id="bulkModal" role="dialog" aria-modal="true" aria-labelledby="bulkTitle">
+    <div class="modal">
+      <header>
+        <h2 id="bulkTitle">Bulk Upload Tasks</h2>
+        <button class="tab-btn" id="closeBulk" aria-label="Close">Close</button>
+      </header>
+      <p class="muted">Paste one task per line in the format:<br><code>Title,YYYY-MM-DD,Category,Priority</code></p>
+      <textarea id="bulkInput" placeholder="Essay,2025-10-28,Project,low&#10;Math Homework,2025-10-30,Homework,high"></textarea>
+      <div id="bulkErrors" class="muted" aria-live="polite" style="margin-top:6px"></div>
       <div class="actions">
-        <button class="primary" id="unlockBtn" aria-label="Unlock">Unlock</button>
+        <button class="ghost" id="bulkClear">Clear</button>
+        <button class="primary" id="bulkImport">Import Tasks</button>
       </div>
     </div>
   </div>
+</main>
 
-  <main class="app" role="application" id="appRoot" hidden>
-    <!-- Tabs -->
-    <nav class="tabs" role="tablist" aria-label="Views">
-      <button class="tab-btn" id="tabCalendar" role="tab" aria-controls="viewCalendar" aria-selected="true">Calendar View</button>
-      <button class="tab-btn" id="tabTasks" role="tab" aria-controls="viewTasks" aria-selected="false">Task Manager</button>
-      <button class="tab-btn" id="tabWeekly" role="tab" aria-controls="viewWeekly" aria-selected="false">Weekly View</button>
-      <button class="tab-btn" id="tabVerses" role="tab" aria-controls="viewVerses" aria-selected="false">Pinned Verses</button>
-    </nav>
+<script>
+(function(){
+  /* ===== Password Gate ===== */
+  const PASSWORD='Moana0121';
+  const lock=document.getElementById('lockScreen');
+  const lockCard=document.getElementById('lockCard');
+  const lockInput=document.getElementById('lockInput');
+  const unlockBtn=document.getElementById('unlockBtn');
+  const appRoot=document.getElementById('appRoot');
 
-    <!-- Calendar View (clean) -->
-    <section id="viewCalendar" role="tabpanel" aria-labelledby="tabCalendar">
-      <header>
-        <div class="nav-buttons"><button id="prevMonth" aria-label="Previous month">⟨</button></div>
-        <h1 id="monthYear">Olivia's School Tasks</h1>
-        <div class="nav-buttons"><button id="nextMonth" aria-label="Next month">⟩</button></div>
-      </header>
+  function unlock(){
+    const ok=lockInput.value===PASSWORD;
+    if(ok){ lock.style.display='none'; appRoot.hidden=false; try{localStorage.setItem('olivia_authed','1');}catch{} initApp(); }
+    else { lockCard.classList.remove('shake'); void lockCard.offsetWidth; lockCard.classList.add('shake'); lockInput.value=''; lockInput.focus(); }
+  }
+  unlockBtn.addEventListener('click', unlock);
+  lockInput.addEventListener('keydown', e=>{ if(e.key==='Enter') unlock(); });
+  try{ if(localStorage.getItem('olivia_authed')==='1'){ lock.style.display='none'; appRoot.hidden=false; } }catch{}
 
-      <!-- Daily verse (replaces quote), with pin button -->
-      <div class="verse" id="verseBlock">
-        <div class="verse-ref" id="verseRef">Verse</div>
-        <div class="verse-text" id="verseText"></div>
-        <div style="margin-top:8px; display:flex; gap:8px; justify-content:flex-end;">
-          <button class="ghost" id="pinVerseBtn">Pin Verse</button>
-          <button class="ghost" id="newVerseBtn" title="Shuffle today's verse">New Verse</button>
-        </div>
-      </div>
+  /* ===== App ===== */
+  function initApp(){
+    // Tabs
+    const tabCalendar = document.getElementById('tabCalendar');
+    const tabTasks    = document.getElementById('tabTasks');
+    const tabWeekly   = document.getElementById('tabWeekly');
+    const tabVerses   = document.getElementById('tabVerses');
+    const viewCalendar= document.getElementById('viewCalendar');
+    const viewTasks   = document.getElementById('viewTasks');
+    const viewWeekly  = document.getElementById('viewWeekly');
+    const viewVerses  = document.getElementById('viewVerses');
 
-      <div class="weekdays" id="weekdayRow"></div>
-      <div class="days" id="days"></div>
-    </section>
-
-    <!-- Task Manager (form + list + bulk + delete) -->
-    <section id="viewTasks" role="tabpanel" aria-labelledby="tabTasks" hidden>
-      <div class="form" aria-label="Add task">
-        <input type="text" id="taskTitle" placeholder="Task title" />
-        <input type="date" id="taskDate" />
-        <select id="taskCategory">
-          <option value="Homework">Homework</option>
-          <option value="Project">Project</option>
-          <option value="Exam">Exam</option>
-          <option value="Reminder">Reminder</option>
-        </select>
-        <select id="taskPriority">
-          <option value="low">low</option>
-          <option value="medium">medium</option>
-          <option value="high">high</option>
-        </select>
-        <button class="primary" id="addTask">Add Task</button>
-        <button class="ghost" id="openBulk">Bulk Upload</button>
-      </div>
-
-      <ul class="list" id="taskList"></ul>
-      <button class="bulk-delete" id="deleteCompleted">Delete All Completed Tasks</button>
-    </section>
-
-    <!-- Weekly View -->
-    <section id="viewWeekly" role="tabpanel" aria-labelledby="tabWeekly" hidden>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <button id="prevWeek" class="ghost">Prev Week</button>
-        <div id="weekTitle" style="font-weight:700;color:#d93a3a;">This Week</div>
-        <button id="nextWeek" class="ghost">Next Week</button>
-      </div>
-      <div id="weeklyContainer"></div>
-      <button class="bulk-delete" id="deleteCompletedWeekly">Delete All Completed Tasks</button>
-    </section>
-
-    <!-- Pinned Verses -->
-    <section id="viewVerses" role="tabpanel" aria-labelledby="tabVerses" hidden>
-      <h3 style="margin:0 0 8px; color:var(--red-5);">Pinned Verses</h3>
-      <div id="pinnedList"></div>
-      <button class="bulk-delete" id="clearPinned">Clear All Pinned Verses</button>
-    </section>
-
-    <!-- Bulk Upload Modal -->
-    <div class="modal-backdrop" id="bulkModal" role="dialog" aria-modal="true" aria-labelledby="bulkTitle">
-      <div class="modal">
-        <header>
-          <h2 id="bulkTitle">Bulk Upload Tasks</h2>
-          <button class="tab-btn" id="closeBulk" aria-label="Close">Close</button>
-        </header>
-        <p class="muted">Paste one task per line in the format:<br><code>Title,YYYY-MM-DD,Category,Priority</code></p>
-        <textarea id="bulkInput" placeholder="Essay,2025-10-28,Project,low&#10;Math Homework,2025-10-30,Homework,high"></textarea>
-        <div id="bulkErrors" class="muted" aria-live="polite" style="margin-top:6px"></div>
-        <div class="actions">
-          <button class="ghost" id="bulkClear">Clear</button>
-          <button class="primary" id="bulkImport">Import Tasks</button>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <script>
-  (function(){
-    // ===== Password Gate =====
-    const PASSWORD = 'Moana0121';
-    const lock = document.getElementById('lockScreen');
-    const lockCard = document.getElementById('lockCard');
-    const lockInput = document.getElementById('lockInput');
-    const unlockBtn = document.getElementById('unlockBtn');
-    const appRoot = document.getElementById('appRoot');
-
-    function unlock(){
-      const ok = lockInput.value === PASSWORD;
-      if(ok){ lock.style.display='none'; appRoot.hidden=false; try{ localStorage.setItem('olivia_authed','1'); }catch{} initApp(); }
-      else { lockCard?.classList?.remove('shake'); void lockCard?.offsetWidth; lockCard?.classList?.add('shake'); lockInput.value=''; lockInput.focus(); }
+    function setTab(name){
+      const pairs = {
+        calendar:[tabCalendar,viewCalendar],
+        tasks:[tabTasks,viewTasks],
+        weekly:[tabWeekly,viewWeekly],
+        verses:[tabVerses,viewVerses]
+      };
+      Object.entries(pairs).forEach(([k,[btn,pnl]])=>{
+        const on = (k===name);
+        btn.setAttribute('aria-selected', on);
+        pnl.hidden = !on;
+      });
+      localStorage.setItem('uiTab_Olivia', name);
     }
-    unlockBtn.addEventListener('click', unlock);
-    lockInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') unlock(); });
-    try{ if(localStorage.getItem('olivia_authed')==='1'){ lock.style.display='none'; appRoot.hidden=false; } }catch{}
+    setTab(localStorage.getItem('uiTab_Olivia') || 'calendar');
+    tabCalendar.onclick=()=>setTab('calendar');
+    tabTasks.onclick=()=>setTab('tasks');
+    tabWeekly.onclick=()=>setTab('weekly');
+    tabVerses.onclick=()=>setTab('verses');
 
-    // ===== App =====
-    function initApp(){
-      // Tabs
-      const tabCalendar = document.getElementById('tabCalendar');
-      const tabTasks = document.getElementById('tabTasks');
-      const tabWeekly = document.getElementById('tabWeekly');
-      const tabVerses = document.getElementById('tabVerses');
-      const viewCalendar = document.getElementById('viewCalendar');
-      const viewTasks = document.getElementById('viewTasks');
-      const viewWeekly = document.getElementById('viewWeekly');
-      const viewVerses = document.getElementById('viewVerses');
+    // Data
+    const STORAGE_KEY='schoolTasks_OliviaSims';
+    const saveTasks=()=>localStorage.setItem(STORAGE_KEY,JSON.stringify(tasks));
+    let tasks=[]; try{tasks=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');}catch{tasks=[];}
 
-      function setTab(name){
-        const map = {
-          calendar: [tabCalendar, viewCalendar],
-          tasks:    [tabTasks, viewTasks],
-          weekly:   [tabWeekly, viewWeekly],
-          verses:   [tabVerses, viewVerses],
-        };
-        for(const k of Object.keys(map)){
-          const [btn, panel] = map[k];
-          const on = (k===name);
-          btn.setAttribute('aria-selected', on);
-          panel.hidden = !on;
-        }
-        localStorage.setItem('uiTab_Olivia', name);
+    // Calendar elements
+    const monthYear=document.getElementById('monthYear');
+    const prevMonth=document.getElementById('prevMonth');
+    const nextMonth=document.getElementById('nextMonth');
+    const daysEl=document.getElementById('days');
+    const weekdayRow=document.getElementById('weekdayRow');
+    let viewMonth=new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const ymd=d=>d.toISOString().slice(0,10);
+    const fmt=(d,o)=>new Intl.DateTimeFormat(undefined,o).format(d);
+
+    function renderCalendar(){
+      const W=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      weekdayRow.innerHTML=W.map(w=>`<div>${w}</div>`).join('');
+      monthYear.textContent=`${fmt(viewMonth,{month:'long'})} ${viewMonth.getFullYear()}`;
+
+      const y=viewMonth.getFullYear(), m=viewMonth.getMonth();
+      const first=new Date(y,m,1).getDay();
+      const lastDate=new Date(y,m+1,0).getDate();
+      daysEl.innerHTML='';
+      for(let i=0;i<first;i++){ const e=document.createElement('div'); e.className='day-cell'; e.style.visibility='hidden'; daysEl.appendChild(e); }
+      for(let d=1; d<=lastDate; d++){
+        const cell=document.createElement('div'); cell.className='day-cell'; cell.textContent=d;
+        const s=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        if(ymd(new Date())===s) cell.classList.add('today');
+        if(tasks.some(t=>t.date===s)){ const dot=document.createElement('span'); dot.className='task-dot'; cell.appendChild(dot); }
+        cell.onclick=()=>quickAdd(s);
+        daysEl.appendChild(cell);
       }
-      (function(){ // restore tab
-        const saved = localStorage.getItem('uiTab_Olivia') || 'calendar';
-        setTab(saved);
-      })();
+    }
+    function quickAdd(dateStr){
+      const t=prompt('Add a task for '+dateStr+':');
+      if(!t) return;
+      tasks.push({title:t.trim(),date:dateStr,category:'Homework',priority:'medium',done:false});
+      saveTasks(); renderCalendar(); renderTasks(); renderWeekly();
+    }
+    prevMonth.onclick=()=>{viewMonth.setMonth(viewMonth.getMonth()-1);renderCalendar();};
+    nextMonth.onclick=()=>{viewMonth.setMonth(viewMonth.getMonth()+1);renderCalendar();};
 
-      tabCalendar.addEventListener('click', ()=> setTab('calendar'));
-      tabTasks.addEventListener('click', ()=> setTab('tasks'));
-      tabWeekly.addEventListener('click', ()=> setTab('weekly'));
-      tabVerses.addEventListener('click', ()=> setTab('verses'));
+    // Task Manager
+    const addTaskBtn=document.getElementById('addTask');
+    const taskTitle=document.getElementById('taskTitle');
+    const taskDate=document.getElementById('taskDate');
+    const taskCategory=document.getElementById('taskCategory');
+    const taskPriority=document.getElementById('taskPriority');
+    const taskList=document.getElementById('taskList');
 
-      // ===== Data =====
-      const STORAGE_KEY = 'schoolTasks_OliviaSims';
-      let tasks = [];
-      try{ tasks = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }catch{ tasks=[]; }
-      const saveTasks = ()=>{ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); }catch{} };
+    function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
-      // ===== Calendar =====
-      const monthYear = document.getElementById('monthYear');
-      const prevMonth = document.getElementById('prevMonth');
-      const nextMonth = document.getElementById('nextMonth');
-      const daysEl = document.getElementById('days');
-      const weekdayRow = document.getElementById('weekdayRow');
-      let viewMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-
-      function ymd(d){ return d.toISOString().slice(0,10); }
-      function fmt(d, opts){ return new Intl.DateTimeFormat(undefined, opts).format(d); }
-
-      function renderCalendar(){
-        // Weekday header
-        const W = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-        weekdayRow.innerHTML = W.map(w=>`<div>${w}</div>`).join('');
-
-        monthYear.textContent = `${fmt(viewMonth,{month:'long'})} ${viewMonth.getFullYear()}`;
-
-        const year = viewMonth.getFullYear();
-        const month = viewMonth.getMonth();
-        const firstDay = new Date(year, month, 1).getDay();
-        const lastDate = new Date(year, month+1, 0).getDate();
-
-        daysEl.innerHTML = '';
-        for(let i=0;i<firstDay;i++){
-          const e=document.createElement('div'); e.className='day-cell'; e.style.visibility='hidden'; daysEl.appendChild(e);
-        }
-        for(let d=1; d<=lastDate; d++){
-          const cell = document.createElement('div');
-          cell.className = 'day-cell';
-          cell.textContent = d;
-          const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-
-          // Today highlight
-          if(ymd(new Date()) === dateStr) cell.classList.add('today');
-
-          // Red dot if tasks on this date
-          const hasTasks = tasks.some(t => t.date === dateStr);
-          if(hasTasks){ const dot = document.createElement('span'); dot.className='task-dot'; cell.appendChild(dot); }
-
-          // Quick add on click
-          cell.addEventListener('click', ()=> quickAdd(dateStr));
-          daysEl.appendChild(cell);
-        }
+    function renderTasks(){
+      taskList.innerHTML='';
+      if(!tasks.length){ taskList.innerHTML='<li class="item">No tasks</li>'; return; }
+      const sorted=[...tasks].sort((a,b)=>a.date.localeCompare(b.date));
+      for(const t of sorted){
+        const li=document.createElement('li'); li.className='item'+(t.done?' done':'');
+        li.innerHTML=`<div><span class="badge ${t.category}">${escapeHtml(t.category)}</span><strong>${escapeHtml(t.title)}</strong> (${t.date}) <span class="dot ${t.priority}"></span></div>
+                      <div><input type="checkbox" ${t.done?'checked':''}><button class="delete-btn">Delete</button></div>`;
+        li.querySelector('input').onchange=()=>{t.done=!t.done;saveTasks();renderTasks();renderCalendar();renderWeekly();};
+        const del=()=>{ if(confirm('Delete this task?')){ tasks=tasks.filter(x=>x!==t); saveTasks(); renderTasks(); renderCalendar(); renderWeekly(); } };
+        li.querySelector('.delete-btn').onclick=del;
+        li.ondblclick=del;
+        taskList.appendChild(li);
       }
-      function quickAdd(dateStr){
-        const t = prompt('Add a task for '+dateStr+':');
-        if(!t) return;
-        tasks.push({ title:t.trim(), date:dateStr, category:'Homework', priority:'medium', done:false });
-        saveTasks(); renderCalendar(); renderTasks(); renderWeekly();
+    }
+
+    addTaskBtn.onclick=()=>{
+      const title=(taskTitle.value||'').trim(), date=taskDate.value, category=taskCategory.value, priority=taskPriority.value;
+      if(!title || !date){ alert('Please enter both Title and Date.'); return; }
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){ alert('Please use a valid date (YYYY-MM-DD).'); return; }
+      tasks.push({title, date, category, priority, done:false});
+      saveTasks(); taskTitle.value=''; taskDate.value=''; renderTasks(); renderCalendar(); renderWeekly();
+    };
+
+    // Bulk Upload (Calendar + Task tabs)
+    const bulkModal=document.getElementById('bulkModal');
+    const openBulk=document.getElementById('openBulk');
+    const openBulkFromCalendar=document.getElementById('openBulkFromCalendar');
+    const closeBulk=document.getElementById('closeBulk');
+    const bulkInput=document.getElementById('bulkInput');
+    const bulkImport=document.getElementById('bulkImport');
+    const bulkErrors=document.getElementById('bulkErrors');
+    const bulkClear=document.getElementById('bulkClear');
+
+    function openBulkModal(){ bulkModal.style.display='flex'; bulkErrors.textContent=''; bulkInput.focus(); }
+    openBulk.onclick=openBulkModal;
+    openBulkFromCalendar.onclick=openBulkModal;
+    closeBulk.onclick=()=>{ bulkModal.style.display='none'; };
+    bulkClear.onclick=()=>{ bulkInput.value=''; bulkErrors.textContent=''; };
+
+    bulkImport.onclick=()=>{
+      const CATS=new Set(['Homework','Project','Exam','Reminder']);
+      const PRIS=new Set(['low','medium','high']);
+      const lines=bulkInput.value.split(/\n+/).map(s=>s.trim()).filter(Boolean);
+      if(!lines.length){ bulkErrors.textContent='Nothing to import. Paste at least one line.'; return; }
+      let ok=0,bad=0, msgs=[];
+      for(const line of lines){
+        const parts=line.split(',').map(x=>x.trim());
+        if(parts.length<2){ bad++; msgs.push(`Invalid format: "${line}"`); continue; }
+        let [title,date,category='Homework',priority='medium']=parts;
+        if(!title){ bad++; msgs.push(`Missing title: "${line}"`); continue; }
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){ bad++; msgs.push(`Bad date (YYYY-MM-DD): "${line}"`); continue; }
+        if(!CATS.has(category)) category='Homework';
+        if(!PRIS.has(priority)) priority='medium';
+        tasks.push({title, date, category, priority, done:false});
+        ok++;
       }
-      prevMonth.addEventListener('click', ()=>{ viewMonth.setMonth(viewMonth.getMonth()-1); renderCalendar(); });
-      nextMonth.addEventListener('click', ()=>{ viewMonth.setMonth(viewMonth.getMonth()+1); renderCalendar(); });
+      saveTasks(); renderTasks(); renderCalendar(); renderWeekly();
+      bulkErrors.textContent = `Imported ${ok} task(s). ${bad? bad+' skipped.' : ''}`;
+      if(ok && !bad){ bulkModal.style.display='none'; bulkInput.value=''; }
+    };
 
-      // ===== Task Manager =====
-      const addTaskBtn = document.getElementById('addTask');
-      const taskTitle = document.getElementById('taskTitle');
-      const taskDate = document.getElementById('taskDate');
-      const taskCategory = document.getElementById('taskCategory');
-      const taskPriority = document.getElementById('taskPriority');
-      const taskList = document.getElementById('taskList');
+    // Weekly View
+    const prevWeek=document.getElementById('prevWeek');
+    const nextWeek=document.getElementById('nextWeek');
+    const weekTitle=document.getElementById('weekTitle');
+    const weeklyContainer=document.getElementById('weeklyContainer');
 
-      function escapeHtml(s){ return s.replace(/[&<>"]/g, c=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]) ); }
+    function startOfWeek(d){
+      const tmp=new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      const day=tmp.getDay(); const diff=(day===0? -6: 1-day); // Monday start
+      tmp.setDate(tmp.getDate()+diff); tmp.setHours(0,0,0,0); return tmp;
+    }
+    let weekAnchor=startOfWeek(new Date());
 
-      function renderTasks(){
-        taskList.innerHTML='';
-        if(!tasks.length){ taskList.innerHTML = '<li class="item">No tasks</li>'; return; }
-        const sorted = [...tasks].sort((a,b)=> a.date.localeCompare(b.date));
-        for(const t of sorted){
-          const li = document.createElement('li');
-          li.className = 'item'+(t.done?' done':'');
-          li.innerHTML = `<div><span class="badge ${t.category}">${t.category}</span><strong>${escapeHtml(t.title)}</strong> (${t.date}) <span class="dot ${t.priority}"></span></div>
-                          <div><input type="checkbox" ${t.done?'checked':''}><button class="delete-btn">Delete</button></div>`;
-          li.querySelector('input').addEventListener('change', ()=>{ t.done=!t.done; saveTasks(); renderTasks(); renderCalendar(); renderWeekly(); });
-          const doDel = ()=>{ if(confirm('Delete this task?')){ tasks = tasks.filter(x=>x!==t); saveTasks(); renderTasks(); renderCalendar(); renderWeekly(); } };
-          li.querySelector('.delete-btn').addEventListener('click', doDel);
-          li.addEventListener('dblclick', doDel);
-          taskList.appendChild(li);
-        }
-      }
+    function renderWeekly(){
+      weeklyContainer.innerHTML='';
+      const start=new Date(weekAnchor);
+      const end=new Date(start); end.setDate(end.getDate()+6);
+      weekTitle.textContent=`${fmt(start,{month:'short',day:'numeric'})} – ${fmt(end,{month:'short',day:'numeric',year:'numeric'})}`;
+      for(let i=0;i<7;i++){
+        const dayDate=new Date(start); dayDate.setDate(start.getDate()+i);
+        const s=ymd(dayDate);
+        const group=document.createElement('div');
+        group.style.background='#fff1f1'; group.style.padding='10px'; group.style.borderRadius='8px'; group.style.margin='6px 0';
 
-      addTaskBtn.addEventListener('click', ()=>{
-        const title = (taskTitle.value||'').trim();
-        const date = taskDate.value;
-        const category = taskCategory.value;
-        const priority = taskPriority.value;
-        if(!title || !date) return alert('Please fill out both title and date');
-        tasks.push({ title, date, category, priority, done:false });
-        saveTasks(); taskTitle.value=''; taskDate.value=''; renderTasks(); renderCalendar(); renderWeekly();
-      });
+        const label=document.createElement('h3');
+        label.textContent=dayDate.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});
+        label.style.color='#d93a3a'; group.appendChild(label);
 
-      // Bulk modal
-      const openBulk = document.getElementById('openBulk');
-      const bulkModal = document.getElementById('bulkModal');
-      const closeBulk = document.getElementById('closeBulk');
-      const bulkInput = document.getElementById('bulkInput');
-      const bulkImport = document.getElementById('bulkImport');
-      const bulkErrors = document.getElementById('bulkErrors');
-      const bulkClear = document.getElementById('bulkClear');
-
-      openBulk.addEventListener('click', ()=>{ bulkModal.style.display='flex'; bulkInput.focus(); });
-      closeBulk.addEventListener('click', ()=>{ bulkModal.style.display='none'; bulkErrors.textContent=''; });
-      bulkClear.addEventListener('click', ()=>{ bulkInput.value=''; bulkErrors.textContent=''; });
-      bulkImport.addEventListener('click', ()=>{
-        const CATEGORIES = new Set(['Homework','Project','Exam','Reminder']);
-        const PRIORITIES = new Set(['low','medium','high']);
-        const parseDate = s => { const m = /^\d{4}-\d{2}-\d{2}$/.test(s) ? new Date(s+'T00:00:00') : null; return m && !isNaN(m) ? m : null; };
-        const ymd = d => d.toISOString().slice(0,10);
-
-        const lines = bulkInput.value.split(/\n+/).map(l=>l.trim()).filter(Boolean);
-        let ok=0, bad=0;
-        for(const line of lines){
-          const parts = line.split(',').map(x=>x.trim());
-          if(parts.length<2){ bad++; continue; }
-          const [title,date,category='Homework',priority='medium'] = parts;
-          const d=parseDate(date); if(!d){ bad++; continue; }
-          const catOk = CATEGORIES.has(category); const priOk = PRIORITIES.has(priority);
-          tasks.push({ title, date: ymd(d), category: catOk?category:'Homework', priority: priOk?priority:'medium', done:false });
-          ok++;
-        }
-        saveTasks(); renderTasks(); renderCalendar(); renderWeekly();
-        bulkErrors.textContent = `Imported ${ok} task(s). ${bad? bad+" line(s) skipped." : ''}`;
-        if(ok && !bad){ bulkModal.style.display='none'; bulkInput.value=''; }
-      });
-
-      // Delete completed buttons
-      document.getElementById('deleteCompleted').addEventListener('click', ()=>{
-        if(confirm('Delete all completed tasks?')){ tasks = tasks.filter(t=>!t.done); saveTasks(); renderTasks(); renderCalendar(); renderWeekly(); }
-      });
-      document.getElementById('deleteCompletedWeekly').addEventListener('click', ()=>{
-        if(confirm('Delete all completed tasks?')){ tasks = tasks.filter(t=>!t.done); saveTasks(); renderTasks(); renderCalendar(); renderWeekly(); }
-      });
-
-      // ===== Weekly View =====
-      const prevWeekBtn = document.getElementById('prevWeek');
-      const nextWeekBtn = document.getElementById('nextWeek');
-      const weekTitle = document.getElementById('weekTitle');
-      const weeklyContainer = document.getElementById('weeklyContainer');
-
-      function startOfWeek(d){
-        const tmp = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-        const day = tmp.getDay(); // 0 Sun .. 6 Sat
-        const diff = (day===0? -6 : 1 - day); // Monday start
-        tmp.setDate(tmp.getDate()+diff); tmp.setHours(0,0,0,0); return tmp;
-      }
-      let weekAnchor = startOfWeek(new Date());
-
-      function renderWeekly(){
-        weeklyContainer.innerHTML='';
-        const fmt = (d,o)=> new Intl.DateTimeFormat(undefined,o).format(d);
-        const ymd = d => d.toISOString().slice(0,10);
-        const start = new Date(weekAnchor);
-        const end = new Date(start); end.setDate(end.getDate()+6);
-        weekTitle.textContent = `${fmt(start,{month:'short', day:'numeric'})} – ${fmt(end,{month:'short', day:'numeric', year:'numeric'})}`;
-        for(let i=0;i<7;i++){
-          const dayDate = new Date(start); dayDate.setDate(start.getDate()+i);
-          const dateStr = ymd(dayDate);
-          const group = document.createElement('div');
-          group.style.background = '#fff1f1'; group.style.padding='10px'; group.style.borderRadius='8px'; group.style.margin='6px 0';
-
-          const label = document.createElement('h3'); label.textContent = dayDate.toLocaleDateString(undefined,{weekday:'long', month:'short', day:'numeric'});
-          label.style.color = '#d93a3a'; group.appendChild(label);
-
-          const todays = tasks.filter(t=>t.date===dateStr).sort((a,b)=> (a.priority>b.priority? -1:1));
-          if(!todays.length){
-            const empty = document.createElement('div'); empty.textContent='No tasks'; empty.style.color='#a34747'; group.appendChild(empty);
-          } else {
-            for(const t of todays){
-              const row = document.createElement('div'); row.className='item'+(t.done?' done':'');
-              row.innerHTML = `<div><span class="badge ${t.category}">${escapeHtml(t.category)}</span><strong>${escapeHtml(t.title)}</strong><span class="dot ${t.priority}"></span></div>
-                               <div><input type="checkbox" ${t.done?'checked':''}><button class="delete-btn">Delete</button></div>`;
-              row.querySelector('input').addEventListener('change', ()=>{ t.done=!t.done; saveTasks(); renderWeekly(); renderTasks(); renderCalendar(); });
-              const doDel = ()=>{ if(confirm('Delete this task?')){ tasks = tasks.filter(x=>x!==t); saveTasks(); renderWeekly(); renderTasks(); renderCalendar(); } };
-              row.querySelector('.delete-btn').addEventListener('click', doDel);
-              row.addEventListener('dblclick', doDel);
-              group.appendChild(row);
-            }
+        const todays=tasks.filter(t=>t.date===s).sort((a,b)=> (a.priority>b.priority?-1:1));
+        if(!todays.length){
+          const empty=document.createElement('div'); empty.textContent='No tasks'; empty.style.color='#a34747'; group.appendChild(empty);
+        }else{
+          for(const t of todays){
+            const row=document.createElement('div'); row.className='item'+(t.done?' done':'');
+            row.innerHTML=`<div><span class="badge ${t.category}">${escapeHtml(t.category)}</span><strong>${escapeHtml(t.title)}</strong><span class="dot ${t.priority}"></span></div>
+                           <div><input type="checkbox" ${t.done?'checked':''}><button class="delete-btn">Delete</button></div>`;
+            row.querySelector('input').onchange=()=>{t.done=!t.done;saveTasks();renderWeekly();renderTasks();renderCalendar();};
+            const del=()=>{ if(confirm('Delete this task?')){ tasks=tasks.filter(x=>x!==t); saveTasks(); renderWeekly(); renderTasks(); renderCalendar(); } };
+            row.querySelector('.delete-btn').onclick=del;
+            row.ondblclick=del;
+            group.appendChild(row);
           }
-          weeklyContainer.appendChild(group);
         }
+        weeklyContainer.appendChild(group);
       }
-      prevWeekBtn.addEventListener('click', ()=>{ weekAnchor.setDate(weekAnchor.getDate()-7); renderWeekly(); });
-      nextWeekBtn.addEventListener('click', ()=>{ weekAnchor.setDate(weekAnchor.getDate()+7); renderWeekly(); });
+    }
+    prevWeek.onclick=()=>{weekAnchor.setDate(weekAnchor.getDate()-7);renderWeekly();};
+    nextWeek.onclick=()=>{weekAnchor.setDate(weekAnchor.getDate()+7);renderWeekly();};
 
-      // ===== Daily Bible Verse (Gospel of John, KJV) =====
-      // Referenced from your link (John), using KJV text for safe redistribution.
-      const VERSES = [
-        {ref:'John 1:1', text:'In the beginning was the Word, and the Word was with God, and the Word was God.'},
-        {ref:'John 1:5', text:'And the light shineth in darkness; and the darkness comprehended it not.'},
-        {ref:'John 1:12', text:'But as many as received him, to them gave he power to become the sons of God, even to them that believe on his name.'},
-        {ref:'John 3:16', text:'For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.'},
-        {ref:'John 3:17', text:'For God sent not his Son into the world to condemn the world; but that the world through him might be saved.'},
-        {ref:'John 6:35', text:'I am the bread of life: he that cometh to me shall never hunger; and he that believeth on me shall never thirst.'},
-        {ref:'John 8:12', text:'I am the light of the world: he that followeth me shall not walk in darkness, but shall have the light of life.'},
-        {ref:'John 10:10', text:'I am come that they might have life, and that they might have it more abundantly.'},
-        {ref:'John 10:27', text:'My sheep hear my voice, and I know them, and they follow me.'},
-        {ref:'John 11:25', text:'I am the resurrection, and the life: he that believeth in me, though he were dead, yet shall he live.'},
-        {ref:'John 13:34', text:'A new commandment I give unto you, That ye love one another; as I have loved you.'},
-        {ref:'John 14:1', text:'Let not your heart be troubled: ye believe in God, believe also in me.'},
-        {ref:'John 14:6', text:'I am the way, the truth, and the life: no man cometh unto the Father, but by me.'},
-        {ref:'John 14:27', text:'Peace I leave with you, my peace I give unto you: not as the world giveth, give I unto you. Let not your heart be troubled, neither let it be afraid.'},
-        {ref:'John 15:5', text:'I am the vine, ye are the branches: He that abideth in me, and I in him, the same bringeth forth much fruit.'},
-        {ref:'John 15:7', text:'If ye abide in me, and my words abide in you, ye shall ask what ye will, and it shall be done unto you.'},
-        {ref:'John 15:11', text:'These things have I spoken unto you, that my joy might remain in you, and that your joy might be full.'},
-        {ref:'John 16:33', text:'In the world ye shall have tribulation: but be of good cheer; I have overcome the world.'},
-        {ref:'John 17:17', text:'Sanctify them through thy truth: thy word is truth.'},
-        {ref:'John 20:31', text:'These are written, that ye might believe that Jesus is the Christ, the Son of God; and that believing ye might have life through his name.'}
-      ];
-      const verseRefEl = document.getElementById('verseRef');
-      const verseTextEl = document.getElementById('verseText');
-      const pinVerseBtn = document.getElementById('pinVerseBtn');
-      const newVerseBtn = document.getElementById('newVerseBtn');
-      const PIN_KEY = 'pinned_verses_Olivia';
-      const ROTATION_KEY = 'verse_rotation_Olivia';
-      const LAST_DAY_KEY = 'verse_last_day_Olivia';
+    // Delete completed
+    document.getElementById('deleteCompleted').onclick=()=>{ if(confirm('Delete all completed tasks?')){ tasks=tasks.filter(t=>!t.done); saveTasks(); renderTasks(); renderCalendar(); renderWeekly(); } };
+    document.getElementById('deleteCompletedWeekly').onclick=()=>{ if(confirm('Delete all completed tasks?')){ tasks=tasks.filter(t=>!t.done); saveTasks(); renderTasks(); renderCalendar(); renderWeekly(); } };
 
-      function getRotation(){
-        try{
-          const data = JSON.parse(localStorage.getItem(ROTATION_KEY)||'null');
-          if(Array.isArray(data) && data.length){ return data; }
-        }catch{}
-        // create new shuffled rotation
-        const idx = [...VERSES.keys()];
-        for(let i=idx.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [idx[i],idx[j]]=[idx[j],idx[i]]; }
-        localStorage.setItem(ROTATION_KEY, JSON.stringify(idx));
-        return idx;
-      }
-      function popNextVerseIdx(){
-        const rot = getRotation();
-        const next = rot.shift();
-        if(rot.length===0){
-          // reshuffle full set after exhausting
-          const full = [...VERSES.keys()];
-          for(let i=full.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [full[i],full[j]]=[full[j],full[i]]; }
-          localStorage.setItem(ROTATION_KEY, JSON.stringify(full));
-        } else {
-          localStorage.setItem(ROTATION_KEY, JSON.stringify(rot));
-        }
-        return next ?? 0;
-      }
-      function loadTodaysVerse(forceNew=false){
-        const today = new Date().toISOString().slice(0,10);
-        const lastDay = localStorage.getItem(LAST_DAY_KEY);
-        let idx = parseInt(localStorage.getItem(LAST_DAY_KEY+'_idx')||'-1',10);
-        if(forceNew || lastDay !== today || isNaN(idx)){
-          idx = popNextVerseIdx();
-          localStorage.setItem(LAST_DAY_KEY, today);
-          localStorage.setItem(LAST_DAY_KEY+'_idx', String(idx));
-        }
-        const v = VERSES[idx] || VERSES[0];
-        verseRefEl.textContent = v.ref;
-        verseTextEl.textContent = v.text;
-        // return current for pinning
-        return v;
-      }
-      let currentVerse = loadTodaysVerse(false);
-      newVerseBtn.addEventListener('click', ()=>{ currentVerse = loadTodaysVerse(true); });
+    // ===== Live Random Verse (with fallbacks) =====
+    const verseRefEl=document.getElementById('verseRef');
+    const verseTextEl=document.getElementById('verseText');
+    const pinVerseBtn=document.getElementById('pinVerseBtn');
+    const newVerseBtn=document.getElementById('newVerseBtn');
 
-      // Pinned verses
-      function getPinned(){
-        try{ const p = JSON.parse(localStorage.getItem(PIN_KEY)||'[]'); return Array.isArray(p)? p: []; }catch{ return []; }
-      }
-      function setPinned(arr){ localStorage.setItem(PIN_KEY, JSON.stringify(arr)); renderPinned(); }
-      pinVerseBtn.addEventListener('click', ()=>{
-        const pins = getPinned();
-        if(!pins.some(p=>p.ref===currentVerse.ref && p.text===currentVerse.text)){
-          pins.unshift({ref: currentVerse.ref, text: currentVerse.text, ts: Date.now()});
-          setPinned(pins);
-          alert('Verse pinned.');
-        } else {
-          alert('Already pinned.');
-        }
-      });
+    // Local fallback list (Gospel of John)
+    const LOCAL_VERSES=[
+      {ref:'John 1:1',text:'In the beginning was the Word, and the Word was with God, and the Word was God.'},
+      {ref:'John 3:16',text:'For God so loved the world, that he gave his only begotten Son...'},
+      {ref:'John 8:12',text:'I am the light of the world: he that followeth me shall not walk in darkness...'},
+      {ref:'John 14:6',text:'I am the way, the truth, and the life: no man cometh unto the Father, but by me.'},
+      {ref:'John 14:27',text:'Peace I leave with you, my peace I give unto you...'},
+      {ref:'John 15:5',text:'I am the vine, ye are the branches...'},
+      {ref:'John 16:33',text:'In the world ye shall have tribulation: but be of good cheer; I have overcome the world.'},
+      {ref:'John 20:31',text:'These are written, that ye might believe that Jesus is the Christ...'}
+    ];
 
-      const pinnedList = document.getElementById('pinnedList');
-      const clearPinned = document.getElementById('clearPinned');
-      function renderPinned(){
-        const pins = getPinned();
-        pinnedList.innerHTML = '';
-        if(!pins.length){
-          const empty = document.createElement('div');
-          empty.textContent = 'No pinned verses';
-          empty.style.color = '#a34747';
-          empty.style.padding = '8px';
-          pinnedList.appendChild(empty);
-          return;
+    // Fetch random verse from open sources (not bible.com due to CORS)
+    async function fetchRandomVerse(){
+      // 1) OurManna
+      try{
+        const r=await fetch('https://beta.ourmanna.com/api/v1/get/?format=json&order=random',{cache:'no-store'});
+        if(r.ok){
+          const j=await r.json();
+          const text=j?.verse?.details?.text || j?.verse?.details?.verse;
+          const ref=j?.verse?.details?.reference || 'Bible Verse';
+          if(text) return {ref, text};
         }
-        for(const p of pins){
-          const card = document.createElement('div');
-          card.className = 'verse';
-          card.innerHTML = `<div class="verse-ref">${p.ref}</div><div class="verse-text">${p.text}</div>`;
-          const actions = document.createElement('div');
-          actions.style.display='flex'; actions.style.justifyContent='flex-end'; actions.style.gap='8px'; actions.style.marginTop='8px';
-          const del = document.createElement('button'); del.className='delete-btn'; del.textContent='Delete';
-          del.onclick = ()=>{ const next = getPinned().filter(x=>!(x.ref===p.ref && x.text===p.text)); setPinned(next); };
-          actions.appendChild(del); card.appendChild(actions);
-          pinnedList.appendChild(card);
+      }catch(e){/* ignore and fall through */}
+      // 2) labs.bible.org (JSON)
+      try{
+        const r=await fetch('https://labs.bible.org/api/?passage=random&type=json',{cache:'no-store'});
+        if(r.ok){
+          const j=await r.json();
+          if(Array.isArray(j) && j.length){
+            const v=j[0];
+            const ref=`${v.bookname} ${v.chapter}:${v.verse}`;
+            const text=v.text;
+            if(text) return {ref, text};
+          }
         }
-      }
-      clearPinned.addEventListener('click', ()=>{ if(confirm('Clear all pinned verses?')) setPinned([]); });
-
-      // ===== Init all views =====
-      function renderAll(){ renderCalendar(); renderTasks(); renderWeekly(); renderPinned(); }
-      renderAll();
-
-      // Keyboard shortcuts (month)
-      window.addEventListener('keydown', (e)=>{
-        if(appRoot.hidden) return;
-        const active = localStorage.getItem('uiTab_Olivia') || 'calendar';
-        if(active==='calendar'){
-          if(e.key==='ArrowLeft') prevMonth.click();
-          if(e.key==='ArrowRight') nextMonth.click();
-        }
-      });
+      }catch(e){/* ignore */}
+      // 3) Local fallback
+      const v=LOCAL_VERSES[Math.floor(Math.random()*LOCAL_VERSES.length)];
+      return v;
     }
 
-    // In case already unlocked in this session
-    if(!appRoot.hidden){ initApp(); }
-  })();
-  </script>
+    const LAST_DAY_KEY='verse_last_day_Olivia';
+    const LAST_VAL_KEY='verse_value_Olivia';
+    async function loadVerse(forceNew=false){
+      const today=new Date().toISOString().slice(0,10);
+      const last=localStorage.getItem(LAST_DAY_KEY);
+      if(!forceNew && last===today){
+        try{
+          const saved=JSON.parse(localStorage.getItem(LAST_VAL_KEY)||'null');
+          if(saved && saved.text){ setVerse(saved); return saved; }
+        }catch{}
+      }
+      const v=await fetchRandomVerse();
+      setVerse(v);
+      localStorage.setItem(LAST_DAY_KEY,today);
+      localStorage.setItem(LAST_VAL_KEY,JSON.stringify(v));
+      return v;
+    }
+    function setVerse(v){
+      verseRefEl.textContent=v.ref||'Bible Verse';
+      verseTextEl.textContent=v.text||'';
+      currentVerse=v;
+    }
+    let currentVerse=null;
+    newVerseBtn.onclick=()=>{ loadVerse(true); };
+
+    // Pinned verses
+    const PIN_KEY='pinned_verses_Olivia';
+    const pinnedList=document.getElementById('pinnedList');
+    const clearPinned=document.getElementById('clearPinned');
+
+    function getPinned(){ try{const p=JSON.parse(localStorage.getItem(PIN_KEY)||'[]'); return Array.isArray(p)?p:[];}catch{return[];} }
+    function setPinned(arr){ localStorage.setItem(PIN_KEY, JSON.stringify(arr)); renderPinned(); }
+    function renderPinned(){
+      const pins=getPinned();
+      pinnedList.innerHTML='';
+      if(!pins.length){
+        const empty=document.createElement('div'); empty.textContent='No pinned verses'; empty.style.color='#a34747'; empty.style.padding='8px';
+        pinnedList.appendChild(empty); return;
+      }
+      for(const p of pins){
+        const card=document.createElement('div'); card.className='verse';
+        card.innerHTML=`<div class="verse-ref">${p.ref}</div><div class="verse-text">${p.text}</div>`;
+        const actions=document.createElement('div'); actions.style.display='flex'; actions.style.justifyContent='flex-end'; actions.style.gap='8px'; actions.style.marginTop='8px';
+        const del=document.createElement('button'); del.className='delete-btn'; del.textContent='Delete';
+        del.onclick=()=>{ const next=getPinned().filter(x=>!(x.ref===p.ref && x.text===p.text)); setPinned(next); };
+        actions.appendChild(del); card.appendChild(actions);
+        pinnedList.appendChild(card);
+      }
+    }
+    clearPinned.onclick=()=>{ if(confirm('Clear all pinned verses?')) setPinned([]); };
+    pinVerseBtn.onclick=()=>{
+      if(!currentVerse){ alert('Verse not loaded yet.'); return; }
+      const pins=getPinned();
+      if(!pins.some(p=>p.ref===currentVerse.ref && p.text===currentVerse.text)){
+        pins.unshift({ref:currentVerse.ref, text:currentVerse.text, ts:Date.now()});
+        setPinned(pins);
+        alert('Verse pinned.');
+      }else{
+        alert('Already pinned.');
+      }
+    };
+
+    // Init all
+    function renderAll(){ renderCalendar(); renderTasks(); renderWeekly(); renderPinned(); }
+    renderAll();
+    loadVerse(false);
+
+    // Keyboard shortcuts for month nav
+    window.addEventListener('keydown',(e)=>{
+      const active=localStorage.getItem('uiTab_Olivia')||'calendar';
+      if(active==='calendar'){
+        if(e.key==='ArrowLeft') prevMonth.click();
+        if(e.key==='ArrowRight') nextMonth.click();
+      }
+    });
+  }
+
+  // if already unlocked
+  if(!appRoot.hidden){ initApp(); }
+})();
+</script>
 </body>
 </html>
